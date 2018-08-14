@@ -24,6 +24,18 @@ class CreateUsersForm extends AbstractType {
                 "second_options" => array("label" => "Repeat Password"),
             ))
             ->add('email', EmailType::class)
+			->add('appraisees', EntityType::class,[
+				"expanded" => true,
+				"multiple" => true,
+				"class" => User::class,
+				"choice_label" => "fullName"
+			])
+			->add('countersignees', EntityType::class,[
+				"expanded" => true,
+				"multiple" => true,
+				"class" => User::class,
+				"choice_label" => "fullName"
+			])
 			->add('securityGroups', EntityType::class, [
 				"expanded" => true,
 				"multiple" => true,

@@ -8,6 +8,7 @@
 
 namespace App\Entity\Base;
 
+use App\Entity\Department;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -72,7 +73,77 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
 	 * @ORM\ManyToMany(targetEntity="SecurityGroup", mappedBy="children")
 	 */
 	private $securityGroups;
-    public function serialize() {
+
+	/**
+	 * @var Collection
+	 * @ORM\ManyToMany(targetEntity="User", mappedBy="appraisers", cascade={"persist"})
+	 */
+	private $appraisees;
+
+
+	/**
+	 * @var Collection
+	 * @ORM\ManyToMany(targetEntity="User", inversedBy="appraisees")
+	 * @ORM\JoinTable(name="user_appraiser_mapping",
+	 *	 joinColumns={
+	 *     @ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+	 *   inverseJoinColumns={
+	 *     @ORM\JoinColumn(name="appraiser_id", referencedColumnName="id")
+	 *	 })
+	 */
+	private $appraisers;
+
+	/**
+	 * @var Collection
+	 * @ORM\ManyToMany(targetEntity="User", mappedBy="countersigners", cascade={"persist"})
+	 */
+	private $countersignees;
+
+	/**
+	 * @var Collection
+	 * @ORM\ManyToMany(targetEntity="User", inversedBy="countersignees")
+	 * @ORM\JoinTable(name="user_countersigner_mapping",
+	 *	 joinColumns={
+	 *     @ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+	 *   inverseJoinColumns={
+	 *     @ORM\JoinColumn(name="countersigner_id", referencedColumnName="id")
+	 *	 })
+	 */
+	private $countersigners;
+
+	/**
+	 * @ORM\Column(name="is_senior", type="boolean")
+	 */
+	private $isSenior = False;
+
+	/**
+	 * @var Department
+	 * @ORM\ManyToOne(targetEntity="App\Entity\Department", inversedBy="children")
+	 * @ORM\JoinColumn(name="department_id", referencedColumnName="id")
+	 */
+	private $department;
+
+	/**
+	 * @var Collection
+	 * @ORM\OneToMany(targetEntity="App\Entity\Appraisal\AppraisalAbstract", mappedBy="owner")
+	 */
+	private $appraisals;
+
+	/**
+	 * @var Collection
+	 * @ORM\OneToMany(targetEntity="App\Entity\Appraisal\AppraisalResponse", mappedBy="owner")
+	 */
+	private $reponses;
+
+	public function __construct() {
+		parent::__construct();
+		$this->appraisees = new ArrayCollection();
+		$this->appraisers = new ArrayCollection();
+		$this->countersignees = new ArrayCollection();
+		$this->countersigners = new ArrayCollection();
+	}
+
+	public function serialize() {
         return serialize([
             $this->id,
             $this->username,
@@ -219,7 +290,7 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
     	if ($groups instanceof Collection) {
 			$this->securityGroups = $groups;
 		} else {
-    		$groups = new ArrayCollection($groups);
+			$this->securityGroup = new ArrayCollection($groups);
 		}
     	return $this;
 	}
@@ -231,4 +302,76 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
 	public function getFriendlyClassName(): string {
 		return "User";
 	}
+
+	/**
+	 * @return Collection
+	 */
+	public function getAppraisees(): Collection {
+		return $this->appraisees;
+	}
+
+	/**
+	 * @return Collection
+	 */
+	public function getAppraisers(): Collection {
+		return $this->appraisers;
+	}
+
+	/**
+	 * @return Collection
+	 */
+	public function getCountersignees(): Collection {
+		return $this->countersignees;
+	}
+
+	/**
+	 * @return Collection
+	 */
+	public function getCountersigners(): Collection {
+		return $this->countersigners;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isSenior():bool {
+		return $this->isSenior;
+	}
+
+	/**
+	 * @param bool $isSenior
+	 */
+	public function setIsSenior(bool $isSenior): void {
+		$this->isSenior = $isSenior;
+	}
+
+	/**
+	 * @return Department
+	 */
+	public function getDepartment(): Department {
+		return $this->department;
+	}
+
+	/**
+	 * @param Department $department
+	 */
+	public function setDepartment(Department $department): void {
+		$this->department = $department;
+	}
+
+	/**
+	 * @return Collection
+	 */
+	public function getAppraisals(): Collection {
+		return $this->appraisals;
+	}
+
+	/**
+	 * @return Collection
+	 */
+	public function getReponses(): Collection {
+		return $this->reponses;
+	}
+
+
 }

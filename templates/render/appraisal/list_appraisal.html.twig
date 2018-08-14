@@ -1,0 +1,29 @@
+{% extends 'render/base.html.twig' %}
+
+{% block css %}
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col title">
+            View Appraisal
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-10 offset-1">
+            {% for period, app in list %}
+                <div class="row">
+                    <div class="col">
+                        <a href="#">{{ period }}</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block modal %}
+{% endblock %}

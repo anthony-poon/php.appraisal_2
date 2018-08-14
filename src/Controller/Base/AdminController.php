@@ -12,6 +12,8 @@ use App\FormType\Form\Users\CreateUsersForm;
 use App\FormType\Form\Users\EditUsersForm;
 use App\FormType\Form\UserGroups\EditDirectoryGroupsForm;
 use App\Service\BaseTemplateHelper;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -19,6 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+
 
 class AdminController extends Controller {
     public function __construct(BaseTemplateHelper $helper, RouterInterface $router) {
@@ -48,7 +51,8 @@ class AdminController extends Controller {
         $helper->addJsParam([
             "addPath" => $this->generateUrl("admin_create_user"),
             "editPath" => $router->getRouteCollection()->get("admin_edit_user")->getPath(),
-            "deletePath" => $router->getRouteCollection()->get("api_admin_delete_user")->getPath()
+            "deletePath" => $router->getRouteCollection()->get("api_admin_delete_user")->getPath(),
+			"uploadPath" => $this->generateUrl("admin_upload_user")
         ]);
         return $this->render('render/admin/list_user.html.twig', [
             "userList" => $userList

@@ -25,7 +25,13 @@ $(document).ready(function(){
                 console.log(ajax);
                 alert("Deletion failed")
             })
-        }
+        },
+        btn: [{
+            text: "Upload",
+            action: () => {
+                location.href = Param.uploadPath
+            }
+        }]
     });
 
     table.init();
