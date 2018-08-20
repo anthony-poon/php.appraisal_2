@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{{ template_helper.title }}</title>
+        <link href="https://fonts.googleapis.com/css?family=Raleway:100,600" rel="stylesheet" type="text/css">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+        <link rel="stylesheet" href="{{ asset("build/vendor.css") }}">
+        <link rel="stylesheet" href="{{ asset("build/base.css") }}">
+        {% for css in template_helper.getCss %}
+            <link rel="stylesheet" href="{{ asset(css) }}">
+        {% endfor %}
+        {% block css %}{% endblock %}
+    </head>
+    <body>
+        <div id="overlay-wrapper">
+            <div id="top-navbar">
+                {% if layout == "full_width" %}
+                    {% include("component/view/top_navbar_full_width.html.twig") %}
+                {% else %}
+                    {% include("component/view/top_navbar.html.twig") %}
+                {% endif %}
+            </div>
+        </div>
+        <div class="container" id="main-wrapper">
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <div class="submenu" id="profile-menu">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path("admin_list_user") }}" class="item btn-like">
+                        Administration
+                    </a>
+                {% endif %}
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <a href="{{ path("profile_edit") }}" class="item btn-like">
+                        Profile
+                    </a>
+                {% endif %}
+                <a href="{{ path("logout") }}" class="item btn-like">
+                    Logout
+                </a>
+            </div>
+            {% endif %}
+            <div class="row">
+                {% if layout == "full_width" %}
+                    {% include("component/view/left_menu.html.twig") %}
+                {% else %}
+                    {% include("component/view/left_menu_full_width.html.twig") %}
+                {% endif %}
+                <div class="col ml-5  my-5" id="content-wrapper">
+                    <div class="row">
+                        <div class="col">
+                            {% block body %}{% endblock %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% block modal %}{% endblock %}
+        <script>
+            window.Param = {};
+            {% for k, p in template_helper.jsParam %}
+                window.Param["{{ k }}"] = "{{ p }}";
+            {% endfor %}
+        </script>
+        <script src="{{ asset("build/manifest.js") }}"></script>
+        <script src="{{ asset("build/vendor.js") }}"></script>
+        <script src="{{ asset("build/base.js") }}"></script>
+        {% for js in template_helper.getJs %}
+            <script src="{{ asset(js) }}"></script>
+        {% endfor %}
+        {% block javascripts %}{% endblock %}
+    </body>
+</html>

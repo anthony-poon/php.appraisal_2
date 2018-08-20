@@ -27,22 +27,31 @@ class InitCommand extends Command {
 
     protected function execute(InputInterface $input, OutputInterface $output) {
 		$output->writeln("Creating root users");
-		$root = new User();
-		$root->setUsername("root");
-		$root->setFullName("root");
-		$password = md5(random_bytes(10));
-		$passwordHash = $this->passwordEncoder->encodePassword($root, $password);
-		$root->setPassword($passwordHash);
+		$userRepo = $this->entityManager->getRepository(User::class);
+		$root = $userRepo->findOneBy(["username" => "root"]);
+		if (empty($root)) {
+			$root = new User();
+			$root->setUsername("root");
+			$root->setFullName("root");
+			$password = md5(random_bytes(10));
+			$passwordHash = $this->passwordEncoder->encodePassword($root, $password);
+			$root->setPassword($passwordHash);
 
-    	$output->writeln("Creating User Group");
-        $adminGroup = new SecurityGroup();
-		$adminGroup->setName("Administrator Group");
-		$adminGroup->setSiteToken("ROLE_ADMIN");
-        $adminGroup->getChildren()->add($root);
+		}
 
-        $this->entityManager->persist($adminGroup);
-        $this->entityManager->persist($root);
-        $output->writeln("Username: root");
+		$grpRepo = $this->entityManager->getRepository(SecurityGroup::class);
+		$adminGroup = $grpRepo->findOneBy(["siteToken" => "ROLE_ADMIN"]);
+		if (empty($adminGroup)) {
+			$output->writeln("Creating User Group");
+			$adminGroup = new SecurityGroup();
+			$adminGroup->setName("Administrator Group");
+			$adminGroup->setSiteToken("ROLE_ADMIN");
+			$adminGroup->getChildren()->add($root);
+		}
+
+		$this->entityManager->persist($adminGroup);
+		$this->entityManager->persist($root);
+		$output->writeln("Username: root");
 		$output->writeln("Password: ".$password);
 		$this->entityManager->flush();
     }

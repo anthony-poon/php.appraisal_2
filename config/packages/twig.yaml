@@ -9,3 +9,4 @@ twig:
 
     globals:
       template_helper: '@App\Service\BaseTemplateHelper'
+      layout: '%layout%'

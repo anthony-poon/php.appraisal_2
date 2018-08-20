@@ -1,10 +1,14 @@
+$font-size-base: 0.9rem;
+
+@import "~bootstrap/scss/bootstrap";
 @import "var";
+
 html {
   color: #505050;
 }
 
 #overlay-wrapper {
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   width: 100vw;
@@ -17,7 +21,7 @@ html {
     display: flex;
     align-items: center;
     #title {
-      font-size: 21px;
+      font-size: $h5-font-size;
       display: flex;
       align-items: center;
     }
@@ -27,31 +31,26 @@ html {
       justify-content: flex-end;
       .material-icons{
         font-size: 32px;
-        padding: 14px;
       }
     }
   }
 }
 
 #side-menu {
-  padding-top: 52px;
   border-right: rgba(0, 0, 0, 0.1) 1px solid;
   height: 100vh;
   background-color: white;
-  font-size: 12px;
   .menu-item {
     transition: color 0.4s;
-    padding-top: 8px;
-    padding-bottom: 8px;
     display: flex;
+    color: $secondary;
+    font-size: $h6-font-size;
     .icon-wrapper {
-      width: 34px;
       display: flex;
       align-items: center;
       flex-grow: 0;
       flex-shrink: 0;
       .material-icons {
-        font-size: 18px;
       }
     }
     .text-wrapper {
@@ -59,8 +58,8 @@ html {
       align-items: center;
     }
   }
-  .menu-item.child {
-    margin-left: 20px;
+  .menu-item:hover{
+    color: $primary;
   }
 }
 
@@ -92,20 +91,16 @@ html {
 }
 
 #main-wrapper {
-  padding-top: 60px;
-  color: #666666;
   position: relative;
   z-index: 1;
   #content-wrapper {
-    margin-top: 60px;
-    margin-bottom: 30px;
+    @extend .text-muted;
     .title {
-      color: #3A99FC;
+      @extend .text-primary;
       border-left: #3A99FC 2.5px solid;
-      margin-bottom: 20px;
-      padding-top: 6px;
-      padding-left: 20px;
-      padding-bottom: 8px;
+      @extend .mb-3;
+      @extend .pl-3;
+      @extend .py-1;
     }
   }
 }
@@ -116,7 +111,6 @@ html {
 }
 
 .btn-like:hover {
-  color: #007bff;
 }
 
 .btn-like.text-danger:hover {
@@ -129,7 +123,6 @@ html {
 
 a.btn-like {
   text-decoration: none;
-  color: #505050;
 }
 a.btn-like:hover {
   text-decoration: none;

@@ -20,7 +20,6 @@ Encore
     .createSharedEntry('vendor', [
         'jquery',
         'bootstrap',
-        'bootstrap/scss/bootstrap.scss',
         'datatables.net-bs4/css/dataTables.bootstrap4.css',
         'datatables.net-buttons-bs4/css/buttons.bootstrap4.css',
         'datatables.net-select-bs4/css/select.bootstrap4.css'
