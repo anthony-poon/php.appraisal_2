@@ -2,7 +2,10 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: 'en'
-    layout: 'full_width'
+    # layout: 'full_width' / 'compact'
+    layout: 'compact'
+    # menu_style: 'collapse' / 'expand'
+    menu_style: 'expand'
 
 services:
     # default configuration for services in *this* file

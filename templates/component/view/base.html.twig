@@ -14,40 +14,24 @@
         {% block css %}{% endblock %}
     </head>
     <body>
-        <div id="overlay-wrapper">
-            <div id="top-navbar">
-                {% if layout == "full_width" %}
-                    {% include("component/view/top_navbar_full_width.html.twig") %}
-                {% else %}
-                    {% include("component/view/top_navbar.html.twig") %}
-                {% endif %}
-            </div>
-        </div>
-        <div class="container" id="main-wrapper">
-            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-            <div class="submenu" id="profile-menu">
-                {% if is_granted('ROLE_ADMIN') %}
-                    <a href="{{ path("admin_list_user") }}" class="item btn-like">
-                        Administration
-                    </a>
-                {% endif %}
-                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <a href="{{ path("profile_edit") }}" class="item btn-like">
-                        Profile
-                    </a>
-                {% endif %}
-                <a href="{{ path("logout") }}" class="item btn-like">
-                    Logout
-                </a>
-            </div>
-            {% endif %}
+        {% if layout == "full_width" %}
+            {% include("/component/view/top_navbar_full_width.html.twig") %}
+        {% else %}
+            {% include("/component/view/top_navbar_compact.html.twig") %}
+        {% endif %}
+        {% if menu_style == "collapse" %}
+            {% include("/component/view/left_menu_collapse.html.twig") %}
+        {% endif %}
+        <div class="{{ layout == "full_width" ? "container-fluid" : "container" }}" id="main-wrapper">
             <div class="row">
-                {% if layout == "full_width" %}
-                    {% include("component/view/left_menu.html.twig") %}
-                {% else %}
-                    {% include("component/view/left_menu_full_width.html.twig") %}
+                {% if menu_style != "collapse" %}
+                    {% include("/component/view/left_menu_expand.html.twig") %}
                 {% endif %}
-                <div class="col ml-5  my-5" id="content-wrapper">
+                {% if layout == "full_width" %}
+                    <div class="col my-5 px-5" id="content-wrapper">
+                {% else %}
+                    <div class="col my-5" id="content-wrapper">
+                {% endif %}
                     <div class="row">
                         <div class="col">
                             {% block body %}{% endblock %}

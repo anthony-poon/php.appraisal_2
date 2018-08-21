@@ -10,3 +10,4 @@ twig:
     globals:
       template_helper: '@App\Service\BaseTemplateHelper'
       layout: '%layout%'
+      menu_style: '%menu_style%'

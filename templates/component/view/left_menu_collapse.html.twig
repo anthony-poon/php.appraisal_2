@@ -1,10 +1,19 @@
-<div class="col-md-2 pt-5" id="side-menu">
+<div class="col-md-2 pl-4 pt-2 collapse fixed-top bg-white" id="side-menu">
     {% for item in template_helper.getSideMenu %}
+        <div class="row py-3">
+            <div class="col">
+                <i class="material-icons btn-like text-primary" data-toggle="collapse" data-target="#side-menu">
+                    clear
+                </i>
+            </div>
+        </div>
         <div class="row">
             <div class="col">
-                <a href="{{ item.url }}" class="menu-item btn-like py-3">
+                <a href="{{ item.url }}" class="menu-item btn-like py-2 pl-3">
                     {% if item.icon is defined %}
                         <i class="material-icons mr-3">{{ item.icon }}</i>
+                    {% else %}
+                        <i class="material-icons mr-3 invisible">home</i>
                     {% endif %}
                     <span class="text-wrapper">{{ item.text }}</span>
                 </a>
@@ -14,9 +23,11 @@
             {% for child in item.child %}
                 <div class="row">
                     <div class="col">
-                        <a href="{{ child.url }}" class="menu-item btn-like child py-3">
+                        <a href="{{ child.url }}" class="menu-item btn-like ml-3 py-2 pl-3">
                             {% if child.icon is defined %}
                                 <i class="material-icons mr-3">{{ child.icon }}</i>
+                            {% else %}
+                                <i class="material-icons mr-3 invisible">home</i>
                             {% endif %}
                             <span class="text-wrapper">{{ child.text }}</span>
                         </a>
