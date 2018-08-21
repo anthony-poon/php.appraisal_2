@@ -24,6 +24,9 @@ use Doctrine\ORM\EntityManagerInterface;
 class MigrationCommand extends Command {
 	private $em;
 	private $encoder;
+	private $userCache = [];
+	private $appCache = [];
+	private $periodCache = [];
 	/**
 	 * @var \PDO
 	 */
@@ -55,6 +58,7 @@ class MigrationCommand extends Command {
 		$this->migratePartA();
 		$this->migratePartB1();
 		$this->migratePartB2();
+		$this->em->flush();
 	}
 
 	private function migrateUser() {
@@ -79,7 +83,6 @@ class MigrationCommand extends Command {
 		}
 		$depts = [];
 		// Setup user and user right
-		$users = [];
 		foreach ($results as $r) {
 			$user = $userRepo->findOneBy(["username" => $r["username"]]);
 			if (empty($user)){
@@ -114,12 +117,11 @@ class MigrationCommand extends Command {
 			}
 			$user->setIsActive($r["is_active"] == true);
 			// Cache entity in memory for later use
-			$users[$user->getUsername()] = $user;
+			$this->userCache[strtolower($user->getUsername())] = $user;
 			$this->em->persist($user);
 		}
 		$this->em->persist($adminGp);
 		$this->em->persist($reportUserGp);
-		$this->em->flush();
 
 		// Setup countersigner and appraiser
 
@@ -132,10 +134,10 @@ class MigrationCommand extends Command {
 			/* @var User $app */
 			/* @var User $counter1 */
 			/* @var User $counter2 */
-			$user = $users[$r["username"]];
-			$app = $users[$r["appraiser_username"]] ?? null;
-			$counter1 = $users[$r["countersigner_username_1"]] ?? null;
-			$counter2 = $users[$r["countersigner_username_2"]] ?? null;
+			$user = $this->userCache[strtolower($r["username"])];
+			$app = $this->userCache[strtolower($r["appraiser_username"])] ?? null;
+			$counter1 = $this->userCache[strtolower($r["countersigner_username_1"])] ?? null;
+			$counter2 = $this->userCache[strtolower($r["countersigner_username_2"])] ?? null;
 			if (!empty($app) && !$user->getAppraisers()->contains($app)) {
 				$user->getAppraisers()->add($app);
 			}
@@ -147,8 +149,6 @@ class MigrationCommand extends Command {
 			}
 			$this->em->persist($user);
 		}
-		$this->em->flush();
-
 	}
 
 	private function migrateAppraisal() {
@@ -157,7 +157,7 @@ class MigrationCommand extends Command {
 		$query->execute();
 		$results = $query->fetchAll();
 		$periodRepo = $this->em->getRepository(AppraisalPeriod::class);
-		$periodArr = [];
+		$this->periodCache = [];
 		foreach ($results as $r) {
 			$period = $periodRepo->findOneBy(["name" => $r["survey_period"]]);
 			if (empty($period)) {
@@ -165,10 +165,9 @@ class MigrationCommand extends Command {
 				$period->setName($r["survey_period"]);
 				$period->setIsEnabled(false);
 			}
-			$periodArr[$r["survey_period"]] = $period;
+			$this->periodCache[$r["survey_period"]] = $period;
 			$this->em->persist($period);
 		}
-		$this->em->flush();
 		$userRepo = $this->em->getRepository(User::class);
 		$appRepo = $this->em->getRepository(AppVersion1::class);
 		$stm = "
@@ -178,6 +177,7 @@ class MigrationCommand extends Command {
 				generic_training_0_to_1_year, generic_training_1_to_2_year, generic_training_2_to_3_year, 
 				on_job_0_to_1_year, on_job_1_to_2_year, on_job_2_to_3_year, 
 				prof_competency_1, prof_competency_2, prof_competency_3, is_senior, 
+				appraiser_name, countersigner_name, survey_commencement_date, 
 				countersigner_1_part_a_score, countersigner_1_part_b_score, countersigner_2_part_a_score, countersigner_2_part_b_score, 
 				countersigner_1_name, countersigner_2_name, countersigner_1_weight, countersigner_2_weight, 
 				part_a_b_total, part_a_total, part_b_total, 
@@ -188,12 +188,12 @@ class MigrationCommand extends Command {
 				ON p.survey_uid = period.uid";
 		$query = $this->pdo->prepare($stm);
 		$query->execute();
-		while (($r = $query->fetch()) != null) {
+		while (($r = $query->fetch(\PDO::FETCH_ASSOC)) != null) {
 			/* @var \App\Entity\Base\User $user */
 			/* @var \App\Entity\Appraisal\AppraisalPeriod $period */
 			/* @var \App\Entity\Appraisal\AppVersion1 $app */
-			$user = $userRepo->findOneBy(["username" => $r["form_username"]]);
-			$period = $periodArr[$r["survey_period"]];
+			$user = $this->userCache[strtolower($r["form_username"])];
+			$period = $this->periodCache[$r["survey_period"]];
 			$app = $appRepo->findOneBy([
 				"owner" => $user->getId(),
 				"period" => $period->getId(),
@@ -204,6 +204,7 @@ class MigrationCommand extends Command {
 			if (!$period) {
 				throw new \Exception("Unable to retrieve survey period by query: ".$r["survey_period"]);
 			}
+			// Might not need to separate ctn and main json
 			$ctn1 = $userRepo->findOneBy(["fullName" => $r["countersigner_1_name"]]);
 			$ctn2 = $userRepo->findOneBy(["fullName" => $r["countersigner_2_name"]]);
 			if ($r["countersigner_1_name"] && !$ctn1) {
@@ -215,30 +216,31 @@ class MigrationCommand extends Command {
 			if (empty($app)) {
 				$app = new AppVersion1();
 			}
+			$app->setIsLocked(true);
 			$app->setPeriod($period);
 			$app->setOwner($user);
 			$app->setJsonData($r);
+			$this->appCache[strtolower($r["form_username"])][$r["survey_period"]] = $app;
 			$this->em->persist($app);
 		}
-		$this->em->flush();
-
-
 	}
 
 	private function migratePartA() {
 		$stm = "SELECT p_a.form_username, p_a.survey_uid, question_no, 
 				respon_name, respon_result, respon_comment, respon_weight, 
-				respon_score, period.survey_period, appraiser_name, countersigner_1_name, countersigner_2_name 
+				respon_score, period.survey_period, app_profile.username as app_username, appraiser_name, countersigner_1_name, countersigner_2_name 
 				FROM pa_part_a as p_a
 				LEFT JOIN pa_form_period as period 
 				ON p_a.survey_uid = period.uid 
 				LEFT JOIN pa_form_data as p 
-				ON p_a.form_username = p.form_username AND p_a.survey_uid = p.survey_uid ";
+				ON p_a.form_username = p.form_username AND p_a.survey_uid = p.survey_uid 
+				LEFT JOIN pa_user as app_profile ON 
+				p.appraiser_name = app_profile.user_full_name";
 		$query = $this->pdo->prepare($stm);
 		$query->execute();
 		$parsedResult = [];
 		while (($r = $query->fetch()) != null) {
-			$parsedResult[$r["form_username"]][$r["survey_period"]]["appraiser_name"] = $r["appraiser_name"];
+			$parsedResult[$r["form_username"]][$r["survey_period"]]["app_username"] = $r["app_username"];
 			$parsedResult[$r["form_username"]][$r["survey_period"]]["countersigner_1_name"] = $r["countersigner_1_name"];
 			$parsedResult[$r["form_username"]][$r["survey_period"]]["countersigner_2_name"] = $r["countersigner_2_name"];
 			$parsedResult[$r["form_username"]][$r["survey_period"]]["part_a"][$r["question_no"]] = [
@@ -249,20 +251,14 @@ class MigrationCommand extends Command {
 				"respon_score" => $r["respon_score"],
 			];
 		}
-		$userRepo = $this->em->getRepository(User::class);
-		$appRepo = $this->em->getRepository(AppVersion1::class);
-		$periodRepo = $this->em->getRepository(AppraisalPeriod::class);
 		foreach ($parsedResult as $username => $arr) {
 			foreach ($arr as $periodName => $data) {
 				/* @var \App\Entity\Base\User $user */
 				/* @var \App\Entity\Appraisal\AppraisalPeriod $period */
 				/* @var \App\Entity\Appraisal\AppVersion1 $app */
-				$user = $userRepo->findOneBy(["username" => $username]);
-				$period = $periodRepo->findOneBy(["name" => $periodName]);
-				$app = $appRepo->findOneBy([
-					"owner" => $user->getId(),
-					"period" => $period->getId(),
-				]);
+				$user = $this->userCache[strtolower($username)];
+				$period = $this->periodCache[$periodName];
+				$app = $this->appCache[strtolower($username)][$periodName];
 				if (!$user) {
 					throw new \Exception("Unable to retrieve user by query: ".$username);
 				}
@@ -280,11 +276,12 @@ class MigrationCommand extends Command {
 					$ownerResponse->setOwner($user);
 					$ownerResponse->setResponseType("owner");
 					$ownerResponse->setAppraisal($app);
+					$app->getResponses()->add($ownerResponse);
 				}
 				$json = $ownerResponse->getJsonData();
 				$json["part_a"] = [];
 				foreach ($data["part_a"] as $qNo => $q) {
-					$json["part_a"][$qNo] = [
+					$json["part_a"]["q_".$qNo] = [
 						"respon_name" => $q["respon_name"],
 						"respon_result" => $q["respon_result"],
 					];
@@ -293,49 +290,52 @@ class MigrationCommand extends Command {
 				$this->em->persist($ownerResponse);
 
 				/* @var User $appraiser */
-				$appraiser = $userRepo->findOneBy(["fullName" => $data["appraiser_name"]]);
-				if ($data["appraiser_name"] && !$appraiser) {
-					throw new \Exception("Query :".$data["appraiser_name"]." return no user");
-				}
-				if ($appraiser) {
-					$appraiserResponse = $app->getResponses()->filter(function (AppraisalResponse $rsp) use ($appraiser) {
-						return $rsp->getOwner() === $appraiser;
-					})->first();
-					if (empty($appraiserResponse)) {
-						$appraiserResponse = new AppraisalResponse();
-						$appraiserResponse->setOwner($appraiser);
-						$appraiserResponse->setResponseType("appraiser");
-						$appraiserResponse->setAppraisal($app);
+				if ($data["app_username"]) {
+					$appraiser = $this->userCache[strtolower($data["app_username"])];
+					if (!$appraiser) {
+						throw new \Exception("Query :".$data["app_username"]." return no user");
+					} else {
+						$appraiserResponse = $app->getResponses()->filter(function (AppraisalResponse $rsp) use ($appraiser) {
+							return $rsp->getOwner() === $appraiser;
+						})->first();
+						if (empty($appraiserResponse)) {
+							$appraiserResponse = new AppraisalResponse();
+							$appraiserResponse->setOwner($appraiser);
+							$appraiserResponse->setResponseType("appraiser");
+							$appraiserResponse->setAppraisal($app);
+							$app->getResponses()->add($appraiserResponse);
+						}
+						$json = $appraiserResponse->getJsonData();
+						$json["part_a"] = [];
+						foreach ($data["part_a"] as $qNo => $q) {
+							$json["part_a"]["q_".$qNo] = [
+								"respon_comment" => $q["respon_comment"],
+								"respon_weight" => $q["respon_weight"],
+								"respon_score" => $q["respon_score"],
+							];
+						}
+						$appraiserResponse->setJsonData($json);
+						$this->em->persist($appraiserResponse);
 					}
-					$json = $appraiserResponse->getJsonData();
-					$json["part_a"] = [];
-					foreach ($data["part_a"] as $qNo => $q) {
-						$json["part_a"][$qNo] = [
-							"respon_comment" => $q["respon_comment"],
-							"respon_weight" => $q["respon_weight"],
-							"respon_score" => $q["respon_score"],
-						];
-					}
-					$appraiserResponse->setJsonData($json);
-					$this->em->persist($appraiserResponse);
 				}
 			}
 		}
-		$this->em->flush();
 	}
 
 	private function migratePartB1() {
-		$stm = "SELECT p_b1.form_username, p_b1.survey_uid, question_no, self_example, self_score, appraiser_example, appraiser_score, period.survey_period, appraiser_name, countersigner_1_name, countersigner_2_name 
+		$stm = "SELECT p_b1.form_username, p_b1.survey_uid, app_profile.username as app_username, appraiser_name, question_no, self_example, self_score, appraiser_example, appraiser_score, period.survey_period, appraiser_name, countersigner_1_name, countersigner_2_name 
 				FROM pa_part_b1 as p_b1
 				LEFT JOIN pa_form_period as period 
 				ON p_b1.survey_uid = period.uid 
 				LEFT JOIN pa_form_data as p 
-				ON p_b1.form_username = p.form_username AND p_b1.survey_uid = p.survey_uid ";
+				ON p_b1.form_username = p.form_username AND p_b1.survey_uid = p.survey_uid 
+				LEFT JOIN pa_user as app_profile ON 
+				p.appraiser_name = app_profile.user_full_name";
 		$query = $this->pdo->prepare($stm);
 		$query->execute();
 		$parsedResult = [];
 		while (($r = $query->fetch()) != null) {
-			$parsedResult[$r["form_username"]][$r["survey_period"]]["appraiser_name"] = $r["appraiser_name"];
+			$parsedResult[$r["form_username"]][$r["survey_period"]]["app_username"] = $r["app_username"];
 			$parsedResult[$r["form_username"]][$r["survey_period"]]["countersigner_1_name"] = $r["countersigner_1_name"];
 			$parsedResult[$r["form_username"]][$r["survey_period"]]["countersigner_2_name"] = $r["countersigner_2_name"];
 			$parsedResult[$r["form_username"]][$r["survey_period"]]["part_b1"][$r["question_no"]] = [
@@ -345,20 +345,14 @@ class MigrationCommand extends Command {
 				"appraiser_score" => $r["appraiser_score"],
 			];
 		}
-		$userRepo = $this->em->getRepository(User::class);
-		$appRepo = $this->em->getRepository(AppVersion1::class);
-		$periodRepo = $this->em->getRepository(AppraisalPeriod::class);
 		foreach ($parsedResult as $username => $arr) {
 			foreach ($arr as $periodName => $data) {
 				/* @var \App\Entity\Base\User $user */
 				/* @var \App\Entity\Appraisal\AppraisalPeriod $period */
-				/* @var \App\Entity\Appraisal\Appraisal $app */
-				$user = $userRepo->findOneBy(["username" => $username]);
-				$period = $periodRepo->findOneBy(["name" => $periodName]);
-				$app = $appRepo->findOneBy([
-					"owner" => $user->getId(),
-					"period" => $period->getId(),
-				]);
+				/* @var \App\Entity\Appraisal\AppVersion1 $app */
+				$user = $this->userCache[strtolower($username)];
+				$period = $this->periodCache[$periodName];
+				$app = $this->appCache[strtolower($username)][$periodName];
 				if (!$user) {
 					throw new \Exception("Unable to retrieve user by query: ".$username);
 				}
@@ -377,11 +371,12 @@ class MigrationCommand extends Command {
 					$ownerResponse->setOwner($user);
 					$ownerResponse->setResponseType("owner");
 					$ownerResponse->setAppraisal($app);
+					$app->getResponses()->add($ownerResponse);
 				}
 				$json = $ownerResponse->getJsonData();
 				$json["part_b1"] = [];
 				foreach ($data["part_b1"] as $qNo => $q) {
-					$json["part_b1"][$qNo] = [
+					$json["part_b1"]["q_".$qNo] = [
 						"self_example" => $q["self_example"],
 						"self_score" => $q["self_score"],
 					];
@@ -390,48 +385,50 @@ class MigrationCommand extends Command {
 				$this->em->persist($ownerResponse);
 
 				/* @var User $appraiser */
-				$appraiser = $userRepo->findOneBy(["fullName" => $data["appraiser_name"]]);
-				if ($data["appraiser_name"] && !$appraiser) {
-					throw new \Exception("Query :".$data["appraiser_name"]." return no user");
-				}
-				if ($appraiser) {
-					$appraiserResponse = $app->getResponses()->filter(function (AppraisalResponse $rsp) use ($appraiser) {
-						return $rsp->getOwner() === $appraiser;
-					})->first();
-					if (empty($appraiserResponse)) {
-						$appraiserResponse = new AppraisalResponse();
-						$appraiserResponse->setOwner($appraiser);
-						$appraiserResponse->setResponseType("appraiser");
-						$appraiserResponse->setAppraisal($app);
+				if ($data["app_username"]) {
+					$appraiser = $this->userCache[strtolower($data["app_username"])];
+					if (!$appraiser) {
+						throw new \Exception("Query :" . $data["app_username"] . " return no user");
+					} else {
+						$appraiserResponse = $app->getResponses()->filter(function (AppraisalResponse $rsp) use ($appraiser) {
+							return $rsp->getOwner() === $appraiser;
+						})->first();
+						if (empty($appraiserResponse)) {
+							$appraiserResponse = new AppraisalResponse();
+							$appraiserResponse->setOwner($appraiser);
+							$appraiserResponse->setResponseType("appraiser");
+							$appraiserResponse->setAppraisal($app);
+						}
+						$json = $appraiserResponse->getJsonData();
+						$json["part_b1"] = [];
+						foreach ($data["part_b1"] as $qNo => $q) {
+							$json["part_b1"]["q_".$qNo] = [
+								"appraiser_example" => $q["appraiser_example"],
+								"appraiser_score" => $q["appraiser_score"],
+							];
+						}
+						$appraiserResponse->setJsonData($json);
+						$this->em->persist($appraiserResponse);
 					}
-					$json = $appraiserResponse->getJsonData();
-					$json["part_b1"] = [];
-					foreach ($data["part_b1"] as $qNo => $q) {
-						$json["part_b1"][$qNo] = [
-							"appraiser_example" => $q["appraiser_example"],
-							"appraiser_score" => $q["appraiser_score"],
-						];
-					}
-					$appraiserResponse->setJsonData($json);
-					$this->em->persist($appraiserResponse);
 				}
 			}
 		}
-		$this->em->flush();
 	}
 
 	private function migratePartB2() {
-		$stm = "SELECT p_b2.form_username, p_b2.survey_uid, question_no, self_example, self_score, appraiser_example, appraiser_score, period.survey_period, appraiser_name, countersigner_1_name, countersigner_2_name 
+		$stm = "SELECT p_b2.form_username, p_b2.survey_uid, app_profile.username as app_username, appraiser_name, question_no, self_example, self_score, appraiser_example, appraiser_score, period.survey_period, appraiser_name, countersigner_1_name, countersigner_2_name 
 				FROM pa_part_b2 as p_b2
 				LEFT JOIN pa_form_period as period 
 				ON p_b2.survey_uid = period.uid 
 				LEFT JOIN pa_form_data as p 
-				ON p_b2.form_username = p.form_username AND p_b2.survey_uid = p.survey_uid ";
+				ON p_b2.form_username = p.form_username AND p_b2.survey_uid = p.survey_uid 
+				LEFT JOIN pa_user as app_profile ON 
+				p.appraiser_name = app_profile.user_full_name";
 		$query = $this->pdo->prepare($stm);
 		$query->execute();
 		$parsedResult = [];
 		while (($r = $query->fetch()) != null) {
-			$parsedResult[$r["form_username"]][$r["survey_period"]]["appraiser_name"] = $r["appraiser_name"];
+			$parsedResult[$r["form_username"]][$r["survey_period"]]["app_username"] = $r["app_username"];
 			$parsedResult[$r["form_username"]][$r["survey_period"]]["countersigner_1_name"] = $r["countersigner_1_name"];
 			$parsedResult[$r["form_username"]][$r["survey_period"]]["countersigner_2_name"] = $r["countersigner_2_name"];
 			$parsedResult[$r["form_username"]][$r["survey_period"]]["part_b2"][$r["question_no"]] = [
@@ -441,20 +438,14 @@ class MigrationCommand extends Command {
 				"appraiser_score" => $r["appraiser_score"],
 			];
 		}
-		$userRepo = $this->em->getRepository(User::class);
-		$appRepo = $this->em->getRepository(AppVersion1::class);
-		$periodRepo = $this->em->getRepository(AppraisalPeriod::class);
 		foreach ($parsedResult as $username => $arr) {
 			foreach ($arr as $periodName => $data) {
 				/* @var \App\Entity\Base\User $user */
 				/* @var \App\Entity\Appraisal\AppraisalPeriod $period */
 				/* @var \App\Entity\Appraisal\AppVersion1 $app */
-				$user = $userRepo->findOneBy(["username" => $username]);
-				$period = $periodRepo->findOneBy(["name" => $periodName]);
-				$app = $appRepo->findOneBy([
-					"owner" => $user->getId(),
-					"period" => $period->getId(),
-				]);
+				$user = $this->userCache[strtolower($username)];
+				$period = $this->periodCache[$periodName];
+				$app = $this->appCache[strtolower($username)][$periodName];
 				if (!$user) {
 					throw new \Exception("Unable to retrieve user by query: ".$username);
 				}
@@ -468,16 +459,18 @@ class MigrationCommand extends Command {
 				$ownerResponse = $app->getResponses()->filter(function(AppraisalResponse $rsp) use ($user) {
 					return $rsp->getOwner() === $user;
 				})->first();
+
 				if (empty($ownerResponse)) {
 					$ownerResponse = new AppraisalResponse();
 					$ownerResponse->setOwner($user);
 					$ownerResponse->setResponseType("owner");
 					$ownerResponse->setAppraisal($app);
+					$app->getResponses()->add($ownerResponse);
 				}
 				$json = $ownerResponse->getJsonData();
 				$json["part_b2"] = [];
 				foreach ($data["part_b2"] as $qNo => $q) {
-					$json["part_b2"][$qNo] = [
+					$json["part_b2"]["q_".$qNo] = [
 						"self_example" => $q["self_example"],
 						"self_score" => $q["self_score"],
 					];
@@ -486,33 +479,34 @@ class MigrationCommand extends Command {
 				$this->em->persist($ownerResponse);
 
 				/* @var User $appraiser */
-				$appraiser = $userRepo->findOneBy(["fullName" => $data["appraiser_name"]]);
-				if ($data["appraiser_name"] && !$appraiser) {
-					throw new \Exception("Query :".$data["appraiser_name"]." return no user");
-				}
-				if ($appraiser) {
-					$appraiserResponse = $app->getResponses()->filter(function (AppraisalResponse $rsp) use ($appraiser) {
-						return $rsp->getOwner() === $appraiser;
-					})->first();
-					if (empty($appraiserResponse)) {
-						$appraiserResponse = new AppraisalResponse();
-						$appraiserResponse->setOwner($appraiser);
-						$appraiserResponse->setResponseType("appraiser");
-						$appraiserResponse->setAppraisal($app);
+				if ($data["app_username"]) {
+					$appraiser = $this->userCache[strtolower($data["app_username"])];
+					if (!$appraiser) {
+						throw new \Exception("Query :" . $data["app_username"] . " return no user");
+					} else {
+						$appraiserResponse = $app->getResponses()->filter(function (AppraisalResponse $rsp) use ($appraiser) {
+							return $rsp->getOwner() === $appraiser;
+						})->first();
+						if (empty($appraiserResponse)) {
+							$appraiserResponse = new AppraisalResponse();
+							$appraiserResponse->setOwner($appraiser);
+							$appraiserResponse->setResponseType("appraiser");
+							$appraiserResponse->setAppraisal($app);
+							$app->getResponses()->add($appraiserResponse);
+						}
+						$json = $appraiserResponse->getJsonData();
+						$json["part_b2"] = [];
+						foreach ($data["part_b2"] as $qNo => $q) {
+							$json["part_b2"]["q_".$qNo] = [
+								"appraiser_example" => $q["appraiser_example"],
+								"appraiser_score" => $q["appraiser_score"],
+							];
+						}
+						$appraiserResponse->setJsonData($json);
+						$this->em->persist($appraiserResponse);
 					}
-					$json = $appraiserResponse->getJsonData();
-					$json["part_b2"] = [];
-					foreach ($data["part_b2"] as $qNo => $q) {
-						$json["part_b2"][$qNo] = [
-							"appraiser_example" => $q["appraiser_example"],
-							"appraiser_score" => $q["appraiser_score"],
-						];
-					}
-					$appraiserResponse->setJsonData($json);
-					$this->em->persist($appraiserResponse);
 				}
 			}
 		}
-		$this->em->flush();
 	}
 }

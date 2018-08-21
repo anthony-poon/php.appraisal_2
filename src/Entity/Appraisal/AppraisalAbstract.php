@@ -44,7 +44,7 @@ abstract class AppraisalAbstract {
 
 	/**
 	 * @var Collection
-	 * @ORM\OneToMany(targetEntity="AppraisalResponse", mappedBy="appraisal")
+	 * @ORM\OneToMany(targetEntity="AppraisalResponse", mappedBy="appraisal", indexBy="owner_id")
 	 */
     private $responses;
 
@@ -53,6 +53,12 @@ abstract class AppraisalAbstract {
 	 * @ORM\Column(type="json", nullable=true)
 	 */
 	private $jsonData;
+
+	/**
+	 * @var bool
+	 * @ORM\Column(type="boolean")
+	 */
+	private $isLocked = false;
 
 	/**
      * @return int
@@ -124,6 +130,20 @@ abstract class AppraisalAbstract {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function isLocked(): bool {
+		return $this->isLocked;
+	}
+
+	/**
+	 * @param bool $isLocked
+	 */
+	public function setIsLocked(bool $isLocked): void {
+		$this->isLocked = $isLocked;
+	}
+
+	/**
 	 * @return int
 	 */
 	abstract function getScore(): int;
@@ -132,4 +152,6 @@ abstract class AppraisalAbstract {
 	 * @return string
 	 */
 	abstract function getTemplate(): string;
+
+	abstract function getRenderData(): array;
 }

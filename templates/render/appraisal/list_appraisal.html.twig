@@ -9,7 +9,7 @@
 {% block body %}
     <div class="row">
         <div class="col title">
-            View Appraisal
+            Appraisals
         </div>
     </div>
     <div class="row">
@@ -17,7 +17,7 @@
             {% for period, app in list %}
                 <div class="row">
                     <div class="col">
-                        <a href="#">{{ period }}</a>
+                        <a href="{{ path("appraisal_view", {"id": app.id}) }}">{{ period }}</a>
                     </div>
                 </div>
             {% endfor %}

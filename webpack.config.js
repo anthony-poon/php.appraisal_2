@@ -17,6 +17,9 @@ Encore
     .addEntry("admin/list_user_group", [
         "./assets/admin/list_user_group.js",
     ])
+    .addEntry("appraisal/form", [
+        "./assets/appraisal/form_vue.js",
+    ])
     .createSharedEntry('vendor', [
         'jquery',
         'bootstrap',
@@ -24,6 +27,7 @@ Encore
         'datatables.net-buttons-bs4/css/buttons.bootstrap4.css',
         'datatables.net-select-bs4/css/select.bootstrap4.css'
     ])
+    .enableVueLoader()
     .enableSourceMaps(!Encore.isProduction())
     .enableSassLoader()
     .autoProvidejQuery()
