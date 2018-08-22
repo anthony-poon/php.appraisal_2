@@ -37,12 +37,32 @@ class DirectoryGroup extends DirectoryObject {
 		return $this->children;
 	}
 
-	public function setChildren($children): DirectoryGroup {
-		if ($children instanceof Collection) {
-			$this->children = $children;
-		} else {
-			$this->children = new ArrayCollection($children);
+	public function addChild(DirectoryObject $do): DirectoryGroup {
+		if (empty($this->children)) {
+			$this->children = new ArrayCollection($do);
 		}
+		$this->children->add($do);
+		return $this;
+	}
+
+	public function clearChildren(DirectoryObject $do): DirectoryGroup {
+		if (empty($this->children)) {
+			$this->children = new ArrayCollection($do);
+		}
+		$this->children->clear();
+		return $this;
+	}
+
+	public function setChild($index, DirectoryObject $do): DirectoryGroup {
+		if (empty($this->children)) {
+			$this->children = new ArrayCollection($do);
+		}
+		$this->children->set($index, $do);
+		return $this;
+	}
+
+	public function setChildren(array $arr): DirectoryGroup {
+		$this->children = new ArrayCollection($arr);
 		return $this;
 	}
 

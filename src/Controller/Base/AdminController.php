@@ -142,18 +142,18 @@ class AdminController extends Controller {
 					$group = $form->getData();
 					$em->persist($group);
 					$em->flush();
+					return $this->redirectToRoute("admin_list_user_group");
 				}
-				return $this->redirectToRoute("admin_list_user_group");
 				break;
 			case "security_group":
-				$form = $this->createForm(SecurityGroup::class);
+				$form = $this->createForm(SecurityGroupForm::class);
 				$form->handleRequest($request);
 				if ($form->isSubmitted() && $form->isValid()) {
 					$group = $form->getData();
 					$em->persist($group);
 					$em->flush();
+					return $this->redirectToRoute("admin_list_user_group");
 				}
-				return $this->redirectToRoute("admin_list_user_group");
 				break;
 			default:
 				$form = $this->createForm(ChooseUserGroupsTypeForm::class);
