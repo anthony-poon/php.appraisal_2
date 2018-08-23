@@ -14,10 +14,15 @@ class BaseTemplateHelper {
 	private $user = null;
 	private $css = [];
 	private $js = [];
+	private $role = [];
     public function __construct(RouterInterface $router, TokenStorageInterface $tokenStorage) {
 		$token = $tokenStorage->getToken();
+		$this->role = [];
 		if ($token) {
 			$this->user = $token->getUser();
+			if ($this->user && $this->user instanceof User) {
+				$this->role = $this->user->getRoles();
+			}
 		}
     	$this->sideMenu = [
         	[
@@ -30,16 +35,16 @@ class BaseTemplateHelper {
 				"url" => $router->generate("appraisal_list")
 			], [
 				"text" => "Administration",
-				"isVisible" => in_array("ROLE_ADMIN", $this->user->getRoles()),
+				"isVisible" => in_array("ROLE_ADMIN", $this->role),
 			], [
 				"text" => "User Management",
 				"url" => $router->generate("admin_list_user"),
-				"isVisible" => in_array("ROLE_ADMIN", $this->user->getRoles()),
+				"isVisible" => in_array("ROLE_ADMIN", $this->role),
 				"indent" => true,
 			], [
 				"text" => "Group Management",
 				"url" => $router->generate("admin_list_user_group"),
-				"isVisible" => in_array("ROLE_ADMIN", $this->user->getRoles()),
+				"isVisible" => in_array("ROLE_ADMIN", $this->role),
 				"indent" => true,
 			]
 		];

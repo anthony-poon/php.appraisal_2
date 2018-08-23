@@ -1,6 +1,6 @@
 <div class="col-md-2 pt-5 bg-white mr-5" id="side-menu">
     {% for item in template_helper.getSideMenu %}
-        {% if item.isVisilbe is not defined or item.isVisible %}
+        {% if item.isVisible is not defined or (item.isVisible is defined and item.isVisible) %}
             <div class="row">
                 <div class="col {{ item.indent is defined and item.indent ? "ml-3" : "" }} pl-0">
                     {% if item.url is defined %}
