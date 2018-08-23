@@ -58,6 +58,7 @@ class MigrationCommand extends Command {
 		$this->migratePartA();
 		$this->migratePartB1();
 		$this->migratePartB2();
+		$this->migratePartD();
 		$this->em->flush();
 	}
 
@@ -500,6 +501,83 @@ class MigrationCommand extends Command {
 							$json["part_b2"]["q_".$qNo] = [
 								"appraiser_example" => $q["appraiser_example"],
 								"appraiser_score" => $q["appraiser_score"],
+							];
+						}
+						$appraiserResponse->setJsonData($json);
+						$this->em->persist($appraiserResponse);
+					}
+				}
+			}
+		}
+	}
+
+	private function migratePartD() {
+		$stm = "SELECT p_d.form_username, p_d.survey_uid, app_profile.username as app_username, appraiser_name, question_no, 
+				key_respon, goal_name, measurement_name, goal_weight, complete_date, period.survey_period, appraiser_name, countersigner_1_name, countersigner_2_name 
+				FROM pa_part_d as p_d
+				LEFT JOIN pa_form_period as period 
+				ON p_d.survey_uid = period.uid 
+				LEFT JOIN pa_form_data as p 
+				ON p_d.form_username = p.form_username AND p_d.survey_uid = p.survey_uid 
+				LEFT JOIN pa_user as app_profile ON 
+				p.appraiser_name = app_profile.user_full_name";
+		$query = $this->pdo->prepare($stm);
+		$query->execute();
+		$parsedResult = [];
+		while (($r = $query->fetch()) != null) {
+			$parsedResult[$r["form_username"]][$r["survey_period"]]["app_username"] = $r["app_username"];
+			$parsedResult[$r["form_username"]][$r["survey_period"]]["countersigner_1_name"] = $r["countersigner_1_name"];
+			$parsedResult[$r["form_username"]][$r["survey_period"]]["countersigner_2_name"] = $r["countersigner_2_name"];
+			$parsedResult[$r["form_username"]][$r["survey_period"]]["part_d"][$r["question_no"]] = [
+				"key_respon" => $r["key_respon"],
+				"goal_name" => $r["goal_name"],
+				"measurement_name" => $r["measurement_name"],
+				"goal_weight" => $r["goal_weight"],
+				"complete_date" => $r["complete_date"],
+			];
+		}
+		foreach ($parsedResult as $username => $arr) {
+			foreach ($arr as $periodName => $data) {
+				/* @var \App\Entity\Base\User $user */
+				/* @var \App\Entity\Appraisal\AppraisalPeriod $period */
+				/* @var \App\Entity\Appraisal\AppVersion1 $app */
+				$user = $this->userCache[strtolower($username)];
+				$period = $this->periodCache[$periodName];
+				$app = $this->appCache[strtolower($username)][$periodName];
+				if (!$user) {
+					throw new \Exception("Unable to retrieve user by query: ".$username);
+				}
+				if (!$period) {
+					throw new \Exception("Unable to retrieve survey period by query: ".$periodName);
+				}
+				if (!$app) {
+					throw new \Exception("Unable to retrieve appraisal where owner = ".$user->getId(). " and period = ". $period->getId());
+				}
+
+				/* @var User $appraiser */
+				if ($data["app_username"]) {
+					$appraiser = $this->userCache[strtolower($data["app_username"])];
+					if (!$appraiser) {
+						throw new \Exception("Query :" . $data["app_username"] . " return no user");
+					} else {
+						$appraiserResponse = $app->getResponses()->filter(function (AppraisalResponse $rsp) use ($appraiser) {
+							return $rsp->getOwner() === $appraiser;
+						})->first();
+						if (empty($appraiserResponse)) {
+							$appraiserResponse = new AppraisalResponse();
+							$appraiserResponse->setOwner($appraiser);
+							$appraiserResponse->setResponseType("appraiser");
+							$appraiserResponse->setAppraisal($app);
+						}
+						$json = $appraiserResponse->getJsonData();
+						$json["part_d"] = [];
+						foreach ($data["part_d"] as $qNo => $q) {
+							$json["part_d"]["q_".$qNo] = [
+								"key_respon" => $q["key_respon"],
+								"goal_name" => $q["goal_name"],
+								"measurement_name" => $q["measurement_name"],
+								"goal_weight" => $q["goal_weight"],
+								"complete_date" => $q["complete_date"],
 							];
 						}
 						$appraiserResponse->setJsonData($json);

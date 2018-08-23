@@ -39,6 +39,10 @@ class AppVersion1 extends AppraisalAbstract {
 		})->first();
 		$ownJson = $ownerResponse->getJsonData();
 		$appJson = $appraiserResponse->getJsonData();
+		$json["part_a"] = [];
+		$json["part_b1"] = [];
+		$json["part_b2"] = [];
+		$json["part_d"] = [];
 		if (isset($ownJson["part_a"])) {
 			$json["part_a"] = $ownJson["part_a"];
 		}
@@ -56,6 +60,12 @@ class AppVersion1 extends AppraisalAbstract {
 		}
 		if (isset($appJson["part_b2"])) {
 			$json["part_b2"] = array_merge_recursive($json["part_b2"], $appJson["part_b2"]);
+		}
+		if (isset($ownJson["part_d"])) {
+			$json["part_d"] = $ownJson["part_d"];
+		}
+		if (isset($appJson["part_d"])) {
+			$json["part_d"] = array_merge_recursive($json["part_d"], $appJson["part_d"]);
 		}
 		$json["id"] = $this->getId();
 		return $json;

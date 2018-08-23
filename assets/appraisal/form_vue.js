@@ -34,7 +34,6 @@ $(document).ready(function(){
                 _.each(inputEls, function(inputEl){
                     if (inputEl.type === "select-one" || inputEl.type === "select-multiple") {
                         let isOptionExist = $(inputEl).find("option[value='" + val + "']").length > 0;
-                        console.log(isOptionExist);
                         if (!isOptionExist) {
                             $(inputEl).append("<option value='" + val + "' hidden disabled>" + val + "</option>")
                         }
