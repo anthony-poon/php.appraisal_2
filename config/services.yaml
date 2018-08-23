@@ -5,7 +5,7 @@ parameters:
     # layout: 'full_width' / 'compact'
     layout: 'compact'
     # menu_style: 'collapse' / 'expand'
-    menu_style: 'expand'
+    menu_style: 'collapse'
 
 services:
     # default configuration for services in *this* file

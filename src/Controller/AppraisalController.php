@@ -20,7 +20,7 @@ use App\Entity\Base\User;
 
 class AppraisalController extends Controller {
     /**
-     * @Route("/member/	appraisal", name="appraisal_list")
+     * @Route("/member/appraisal", name="appraisal_list")
      */
     public function list(Request $request) {
     	/* @var User $user */

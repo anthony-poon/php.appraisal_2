@@ -52,7 +52,6 @@ class AdminController extends Controller {
             "addPath" => $this->generateUrl("admin_create_user"),
             "editPath" => $router->getRouteCollection()->get("admin_edit_user")->getPath(),
             "deletePath" => $router->getRouteCollection()->get("api_admin_delete_user")->getPath(),
-			"uploadPath" => $this->generateUrl("admin_upload_user")
         ]);
         return $this->render('render/admin/list_user.html.twig', [
             "userList" => $userList

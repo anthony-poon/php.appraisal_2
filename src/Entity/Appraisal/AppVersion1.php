@@ -57,6 +57,7 @@ class AppVersion1 extends AppraisalAbstract {
 		if (isset($appJson["part_b2"])) {
 			$json["part_b2"] = array_merge_recursive($json["part_b2"], $appJson["part_b2"]);
 		}
+		$json["id"] = $this->getId();
 		return $json;
 	}
 }

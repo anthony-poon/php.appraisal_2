@@ -104,19 +104,6 @@ class AppraisalPeriod {
 	}
 
 	/**
-	 * @param AppraisalAbstract $appraisals
-	 * @return AppraisalPeriod
-	 */
-	public function setAppraisals(AppraisalAbstract $appraisals): AppraisalPeriod {
-		if ($this->appraisals instanceof Collection) {
-			$this->appraisals = $appraisals;
-		} else {
-			$this->appraisals = new ArrayCollection($appraisals);
-		}
-		return $this;
-	}
-
-	/**
 	 * @return string
 	 */
 	public function getName(): ?string {
