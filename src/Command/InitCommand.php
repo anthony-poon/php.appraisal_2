@@ -49,7 +49,9 @@ class InitCommand extends Command {
 		}
 		$adminGroup->setName("Administrator Group");
 		$adminGroup->setSiteToken("ROLE_ADMIN");
-		$adminGroup->addChild($root);
+		if (!$adminGroup->getChildren()->contains($root)){
+			$adminGroup->addChild($root);
+		}
 		$this->entityManager->persist($adminGroup);
 		$this->entityManager->persist($root);
 

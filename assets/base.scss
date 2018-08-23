@@ -32,9 +32,6 @@ html {
       align-items: center;
     }
   }
-  .menu-item:hover{
-    color: $primary;
-  }
 }
 
 
@@ -88,11 +85,11 @@ html {
 }
 
 .btn-like.text-danger:hover {
-  background-color: #AAAAAA;
+  color: $secondary;
 }
 
 .btn-like.text-primary:hover {
-  background-color: #AAAAAA;
+  color: $secondary;
 }
 
 a.btn-like {

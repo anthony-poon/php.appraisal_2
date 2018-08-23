@@ -1,7 +1,7 @@
 <?php
 namespace App\Service;
 
-use App\Entity\SiteUser;
+use App\Entity\Base\User;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -10,6 +10,7 @@ class BaseTemplateHelper {
     private $sideMenu = [];
     private $title = "Web Application";
     private $jsParam = [];
+    /* @var User $user */
 	private $user = null;
 	private $css = [];
 	private $js = [];
@@ -27,6 +28,19 @@ class BaseTemplateHelper {
 			[
 				"text" => "View Appraisal",
 				"url" => $router->generate("appraisal_list")
+			], [
+				"text" => "Administration",
+				"isVisible" => in_array("ROLE_ADMIN", $this->user->getRoles()),
+			], [
+				"text" => "User Management",
+				"url" => $router->generate("admin_list_user"),
+				"isVisible" => in_array("ROLE_ADMIN", $this->user->getRoles()),
+				"indent" => true,
+			], [
+				"text" => "Group Management",
+				"url" => $router->generate("admin_list_user_group"),
+				"isVisible" => in_array("ROLE_ADMIN", $this->user->getRoles()),
+				"indent" => true,
 			]
 		];
     }

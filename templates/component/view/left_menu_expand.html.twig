@@ -1,32 +1,29 @@
 <div class="col-md-2 pt-5 bg-white mr-5" id="side-menu">
     {% for item in template_helper.getSideMenu %}
-        <div class="row">
-            <div class="col">
-                <a href="{{ item.url }}" class="menu-item btn-like py-2">
-                    {% if item.icon is defined %}
-                        <i class="material-icons mr-3">{{ item.icon }}</i>
-                    {% else %}
-                        <i class="material-icons mr-3 invisible">home</i>
-                    {% endif %}
-                    <span class="text-wrapper">{{ item.text }}</span>
-                </a>
-            </div>
-        </div>
-        {% if item.child is defined %}
-            {% for child in item.child %}
-                <div class="row">
-                    <div class="col">
-                        <a href="{{ child.url }}" class="menu-item btn-like ml-3 py-2">
-                            {% if child.icon is defined %}
-                                <i class="material-icons mr-3">{{ child.icon }}</i>
+        {% if item.isVisilbe is not defined or item.isVisible %}
+            <div class="row">
+                <div class="col {{ item.indent is defined and item.indent ? "ml-3" : "" }} pl-0">
+                    {% if item.url is defined %}
+                        <a href="{{ item.url }}" class="menu-item btn-like py-2">
+                            {% if item.icon is defined %}
+                                <i class="material-icons mr-3">{{ item.icon }}</i>
                             {% else %}
                                 <i class="material-icons mr-3 invisible">home</i>
                             {% endif %}
-                            <span class="text-wrapper">{{ child.text }}</span>
+                            <span class="text-wrapper"><small>{{ item.text }}</small></span>
                         </a>
-                    </div>
+                    {% else %}
+                        <div class="menu-item py-2">
+                            {% if item.icon is defined %}
+                                <i class="material-icons mr-3">{{ item.icon }}</i>
+                            {% else %}
+                                <i class="material-icons mr-3 invisible">home</i>
+                            {% endif %}
+                            <span class="text-wrapper"><small>{{ item.text }}</small></span>
+                        </div>
+                    {% endif %}
                 </div>
-            {% endfor %}
+            </div>
         {% endif %}
     {% endfor %}
 </div>

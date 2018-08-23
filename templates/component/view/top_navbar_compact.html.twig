@@ -29,11 +29,6 @@
                         </a>
                     {% endif %}
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path("admin_list_user") }}" class="dropdown-item px-5 py-2">
-                                Administration
-                            </a>
-                        {% endif %}
                         {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                             <a href="{{ path("profile_edit") }}" class="dropdown-item px-5 py-2">
                                 Profile

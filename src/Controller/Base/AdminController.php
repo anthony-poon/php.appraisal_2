@@ -26,13 +26,6 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 class AdminController extends Controller {
     public function __construct(BaseTemplateHelper $helper, RouterInterface $router) {
         $helper->setTitle("Administration");
-        $helper->addSideMenuItem([
-        		"text" => "User Management",
-				"url" => $router->generate("admin_list_user")
-			])->addSideMenuItem([
-				"text" => "Group Management",
-				"url" => $router->generate("admin_list_user_group")
-			]);
     }
 
     /**
