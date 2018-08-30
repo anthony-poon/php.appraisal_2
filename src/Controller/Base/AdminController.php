@@ -6,11 +6,10 @@ use App\Entity\Base\SecurityGroup;
 use App\Entity\Base\User;
 use App\Entity\Base\DirectoryGroup;
 use App\FormType\Form\UserGroups\ChooseUserGroupsTypeForm;
-use App\FormType\Form\UserGroups\CreateDirectoryGroupsForm;
+use App\FormType\Form\UserGroups\DirectoryGroupsForm;
 use App\FormType\Form\UserGroups\SecurityGroupForm;
 use App\FormType\Form\Users\CreateUsersForm;
 use App\FormType\Form\Users\EditUsersForm;
-use App\FormType\Form\UserGroups\EditDirectoryGroupsForm;
 use App\Service\BaseTemplateHelper;
 use App\Service\EntityTableHelper;
 use Symfony\Component\HttpFoundation\Request;
@@ -166,7 +165,7 @@ class AdminController extends Controller {
 		$em = $this->getDoctrine()->getManager();
 		switch ($formType) {
 			case "directory_group":
-				$form = $this->createForm(CreateDirectoryGroupsForm::class);
+				$form = $this->createForm(DirectoryGroupsForm::class);
 				$form->handleRequest($request);
 				if ($form->isSubmitted() && $form->isValid()) {
 					$group = $form->getData();
@@ -222,8 +221,8 @@ class AdminController extends Controller {
 				}
 				break;
 			// Catch all
-			case DirectoryGroup::class:
-				$form = $this->createForm(EditDirectoryGroupsForm::class, $group);
+			default:
+				$form = $this->createForm(DirectoryGroupsForm::class, $group);
 				$form->handleRequest($request);
 				if ($form->isSubmitted() && $form->isValid()) {
 					$group = $form->getData();

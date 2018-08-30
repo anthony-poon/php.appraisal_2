@@ -2,14 +2,15 @@
 /**
  * Created by PhpStorm.
  * User: ypoon
- * Date: 18/7/2018
- * Time: 12:03 PM
+ * Date: 23/7/2018
+ * Time: 1:01 PM
  */
 
 namespace App\FormType\Form\UserGroups;
 
 use App\Entity\Base\DirectoryGroup;
 use App\Entity\Base\DirectoryObject;
+use App\FormType\Component\CompositeCollectionType;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -17,9 +18,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use App\FormType\Component\CompositeCollectionType;
 
-class EditDirectoryGroupsForm extends AbstractType {
+class DirectoryGroupsForm extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 		/* @var \App\Entity\Base\DirectoryObject $dataObj */
 		$dataObj = $builder->getData();
@@ -58,4 +58,5 @@ class EditDirectoryGroupsForm extends AbstractType {
 			"data_class" => DirectoryGroup::class
 		]);
 	}
+
 }
