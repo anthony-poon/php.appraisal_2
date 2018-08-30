@@ -9,16 +9,10 @@ Encore
     .addEntry("base", [
         "./assets/base.js",
         "./assets/base.scss",
-        "./assets/share/form.js"
+        "./assets/share/form_helper.js"
     ])
-    .addEntry("admin/list_user", [
-        "./assets/admin/list_user.js",
-    ])
-    .addEntry("admin/list_user_group", [
-        "./assets/admin/list_user_group.js",
-    ])
-    .addEntry("appraisal/form", [
-        "./assets/appraisal/form_vue.js",
+    .addEntry("appraisal/view", [
+        "./assets/appraisal/view.js",
     ])
     .createSharedEntry('vendor', [
         'jquery',

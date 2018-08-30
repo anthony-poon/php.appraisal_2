@@ -13,9 +13,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class Department
  * @package App\Entity
- * @ORM\Table(name="department")
+ * @ORM\Table(name="user_department")
  * @ORM\Entity()
  */
 class Department extends DirectoryGroup {
-
+	public function getFriendlyClassName(): string {
+		return "Department";
+	}
 }

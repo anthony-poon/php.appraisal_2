@@ -37,37 +37,74 @@ class AppVersion1 extends AppraisalAbstract {
 		$appraiserResponse = $this->getResponses()->filter(function (AppraisalResponse $rsp) {
 			return $rsp->getResponseType() === "appraiser";
 		})->first();
-		$ownJson = $ownerResponse->getJsonData();
-		$appJson = $appraiserResponse->getJsonData();
 		$json["part_a"] = [];
 		$json["part_b1"] = [];
 		$json["part_b2"] = [];
 		$json["part_d"] = [];
-		if (isset($ownJson["part_a"])) {
-			$json["part_a"] = $ownJson["part_a"];
+
+		if ($ownerResponse) {
+			$ownJson = $ownerResponse->getJsonData();
+			if (isset($ownJson["part_a"])) {
+				$json["part_a"] = $ownJson["part_a"];
+			}
+			if (isset($ownJson["part_b1"])) {
+				$json["part_b1"] = $ownJson["part_b1"];
+			}
+			if (isset($ownJson["part_b2"])) {
+				$json["part_b2"] = $ownJson["part_b2"];
+			}
+			if (isset($ownJson["part_d"])) {
+				$json["part_d"] = $ownJson["part_d"];
+			}
 		}
-		if (isset($appJson["part_a"])) {
-			$json["part_a"] = array_merge_recursive($json["part_a"], $appJson["part_a"]);
+
+		if ($appraiserResponse) {
+			$appJson = $appraiserResponse->getJsonData();
+			if (isset($appJson["part_a"])) {
+				$json["part_a"] = array_merge_recursive($json["part_a"], $appJson["part_a"]);
+			}
+			if (isset($appJson["part_b1"])) {
+				$json["part_b1"] = array_merge_recursive($json["part_b1"], $appJson["part_b1"]);
+			}
+			if (isset($appJson["part_b2"])) {
+				$json["part_b2"] = array_merge_recursive($json["part_b2"], $appJson["part_b2"]);
+			}
+			if (isset($appJson["part_d"])) {
+				$json["part_d"] = array_merge_recursive($json["part_d"], $appJson["part_d"]);
+			}
 		}
-		if (isset($ownJson["part_b1"])) {
-			$json["part_b1"] = $ownJson["part_b1"];
-		}
-		if (isset($appJson["part_b1"])) {
-			$json["part_b1"] = array_merge_recursive($json["part_b1"], $appJson["part_b1"]);
-		}
-		if (isset($ownJson["part_b2"])) {
-			$json["part_b2"] = $ownJson["part_b2"];
-		}
-		if (isset($appJson["part_b2"])) {
-			$json["part_b2"] = array_merge_recursive($json["part_b2"], $appJson["part_b2"]);
-		}
-		if (isset($ownJson["part_d"])) {
-			$json["part_d"] = $ownJson["part_d"];
-		}
-		if (isset($appJson["part_d"])) {
-			$json["part_d"] = array_merge_recursive($json["part_d"], $appJson["part_d"]);
-		}
+
 		$json["id"] = $this->getId();
 		return $json;
 	}
+
+	function initiate() {
+		$owner = $this->getOwner();
+		$period = $this->getPeriod();
+		$appraisers = $owner->getAppraisers();
+		$counters = $owner->getCountersigners();
+		$appStr = [];
+		foreach ($appraisers as $a) {
+			$appStr[] = $a->getFullName();
+		}
+		$appStr = implode(", ", $appStr);
+		$coStr = [];
+		foreach ($counters as $c) {
+			$coStr[] = $c->getFullName();
+		}
+		$coStr = implode(", ", $coStr);
+		$this->setJsonData([
+			"form_username" => $owner->getUsername(),
+			"survey_period" => $period->getName(),
+			"staff_name" => $owner->getFullName(),
+			"staff_department" => $owner->getDepartment(),
+			"staff_office" => $owner->getOffice(),
+			"staff_position" => $owner->getPosition(),
+			"appraiser_name" => $appStr,
+			"countersigner_name" => $coStr,
+			"survey_type" => "Annual Appraisal"
+		]);
+	}
+
+
 }

@@ -42,10 +42,7 @@
         </div>
         {% block modal %}{% endblock %}
         <script>
-            window.Param = {};
-            {% for k, p in template_helper.jsParam %}
-                window.Param["{{ k }}"] = "{{ p }}";
-            {% endfor %}
+            window.Param = JSON.parse('{{ template_helper.getParamEncoded|e('js') }}');
         </script>
         <script src="{{ asset("build/manifest.js") }}"></script>
         <script src="{{ asset("build/vendor.js") }}"></script>

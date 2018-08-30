@@ -1,6 +1,8 @@
 import axios from 'axios';
 import transformer from '../share/ajax_transformer';
 import _ from 'underscore';
+import '../share/form_helper';
+
 $(document).ready(function(){
     let appraisal = {};
 
@@ -12,22 +14,6 @@ $(document).ready(function(){
         _.each(parsed, function(val, fName) {
             if (_.isObject(val)) {
                 let prototype = $("[data-prototype='" + fName + "']");
-                _.each(val, function(child, key){
-                    let clone = prototype.clone();
-                    prototype.before(clone);
-                    clone.data("prototype", null);
-                    clone.attr("data-prototype", null);
-                    clone.data("index", key);
-                    _.each(clone.find("[data-proto-name]"), function(el){
-                        $(el).attr("name", key + $(el).data("proto-name"));
-                    });
-                    _.each(child, function(cVal, cKey){
-                        let inputEls = $(el).find("[name='" + cKey + "']")
-                        _.each(inputEls, function(inputEl) {
-                            $(inputEl).val(cVal);
-                        })
-                    });
-                });
 
             } else {
                 let inputEls = $(el).find("[name='" + fName + "']");

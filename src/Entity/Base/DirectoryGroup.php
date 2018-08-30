@@ -62,7 +62,10 @@ class DirectoryGroup extends DirectoryObject {
 	}
 
 	public function setChildren(array $arr): DirectoryGroup {
-		$this->children = new ArrayCollection($arr);
+		$this->children = new ArrayCollection();
+		foreach ($arr as $item) {
+			$this->addChild($item);
+		}
 		return $this;
 	}
 

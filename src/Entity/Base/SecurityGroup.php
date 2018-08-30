@@ -9,6 +9,7 @@
 namespace App\Entity\Base;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -17,6 +18,7 @@ class SecurityGroup extends DirectoryGroup {
 	/**
 	 * @var string
 	 * @ORM\Column(type="string", length=256, unique=true)
+	 * @Assert\NotNull()
 	 */
 	private $siteToken;
 
@@ -31,7 +33,7 @@ class SecurityGroup extends DirectoryGroup {
 	 * @param string $siteToken
 	 * @return SecurityGroup
 	 */
-	public function setSiteToken(string $siteToken): SecurityGroup {
+	public function setSiteToken(string $siteToken = null): SecurityGroup {
 		$this->siteToken = $siteToken;
 		return $this;
 	}

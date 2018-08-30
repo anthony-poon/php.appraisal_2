@@ -1,0 +1,46 @@
+{% extends 'component/view/base.html.twig' %}
+
+{% block css %}
+{% endblock %}
+
+{% block javascripts %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <h5 class="col title">
+            {{ title }}
+        </h5>
+    </div>
+    <div class="row">
+        <div class="col">
+            <table class="table table-hover" id="user-table"
+                   data-entity-table
+                   data-add-path="{{ addPath }}"
+                   data-del-path="{{ delPath }}"
+                   data-edit-path="{{ editPath }}"
+            >
+                <thead class="thead-light">
+                <tr>
+                    {% for h in header %}
+                        <th>{{ h }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for index, row in table %}
+                    <tr id="{{ index }}">
+                        {% for col in row %}
+                            {% if col.timestamp is defined %}
+                                <td>{{ col|date("Y-m-d") }}</td>
+                            {% else %}
+                                <td>{{ col }}</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

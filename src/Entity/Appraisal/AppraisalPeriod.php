@@ -10,8 +10,8 @@ namespace App\Entity\Appraisal;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\Collection;
-
 /**
  * Class AppraisalPeriod
  * @package App\Entity
@@ -30,18 +30,21 @@ class AppraisalPeriod {
 	/**
 	 * @var string
 	 * @ORM\Column(type="string")
+	 * @Assert\NotBlank()
 	 */
 	private $name;
 
 	/**
-	 * @var \DateTimeImmutable
+	 * @var \DateTimeInterface
 	 * @ORM\Column(type="datetime", nullable=true)
+	 * @Assert\NotBlank()
 	 */
 	private $startDate;
 
 	/**
-	 * @var \DateTimeImmutable
+	 * @var \DateTimeInterface
 	 * @ORM\Column(type="datetime", nullable=true)
+	 * @Assert\GreaterThan(propertyPath="startDate", message="End date must be greater than start date.")
 	 */
 	private $endDate;
 
@@ -58,6 +61,13 @@ class AppraisalPeriod {
 	private $appraisals;
 
 	/**
+	 * @var string
+	 * @ORM\Column(type="string")
+	 * @Assert\NotBlank();
+	 */
+	private $classPath;
+
+	/**
 	 * @return int
 	 */
 	public function getId(): int {
@@ -67,15 +77,24 @@ class AppraisalPeriod {
 	/**
 	 * @return \DateTimeImmutable
 	 */
-	public function getStartDate(): \DateTimeImmutable {
-		return $this->startDate;
+	public function getStartDate():? \DateTimeInterface {
+		if ($this->startDate instanceof \DateTime) {
+			return \DateTimeImmutable::createFromMutable($this->startDate);
+		} else {
+			return $this->startDate;
+		}
+
 	}
 
 	/**
 	 * @return \DateTimeImmutable
 	 */
-	public function getEndDate(): \DateTimeImmutable {
-		return $this->endDate;
+	public function getEndDate():? \DateTimeInterface {
+		if ($this->endDate instanceof \DateTime) {
+			return \DateTimeImmutable::createFromMutable($this->endDate);
+		} else {
+			return $this->endDate;
+		}
 	}
 
 	/**
@@ -86,20 +105,28 @@ class AppraisalPeriod {
 	}
 
 	/**
-	 * @param \DateTimeImmutable $startDate
+	 * @param \DateTimeInterface $startDate
 	 * @return AppraisalPeriod
 	 */
-	public function setStartDate(\DateTimeImmutable $startDate): AppraisalPeriod {
-		$this->startDate = $startDate;
+	public function setStartDate(\DateTimeInterface $startDate = null): AppraisalPeriod {
+		if ($startDate instanceof \DateTime) {
+			$this->startDate = \DateTimeImmutable::createFromMutable($startDate);
+		} else {
+			$this->startDate = $startDate;
+		}
 		return $this;
 	}
 
 	/**
-	 * @param \DateTimeImmutable $endDate
+	 * @param \DateTimeInterface $endDate
 	 * @return AppraisalPeriod
 	 */
-	public function setEndDate(\DateTimeImmutable $endDate): AppraisalPeriod {
-		$this->endDate = $endDate;
+	public function setEndDate(\DateTimeInterface $endDate = null): AppraisalPeriod {
+		if ($endDate instanceof \DateTime) {
+			$this->endDate = \DateTimeImmutable::createFromMutable($endDate);
+		} else {
+			$this->endDate = $endDate;
+		}
 		return $this;
 	}
 
@@ -135,5 +162,32 @@ class AppraisalPeriod {
 		return $this;
 	}
 
+	/**
+	 * @return string
+	 */
+	public function getClassPath():? string {
+		return $this->classPath;
+	}
 
+	/**
+	 * @param string $classPath
+	 * @return AppraisalPeriod
+	 */
+	public function setClassPath(string $classPath): AppraisalPeriod {
+		if (!new $classPath instanceof AppraisalAbstract) {
+			throw new \Exception("$classPath not instance of AppraisalAbstract");
+		}
+		$this->classPath = $classPath;
+		return $this;
+	}
+
+	public function isOpen() {
+		$date = new \DateTime();
+		if (empty($this->startDate) || empty($this->endDate)) {
+			// Not valid if either missing. For backward compatibility
+			return false;
+		}
+		// Start date inclusive, End date exclusive
+		return $this->isEnabled && ($this->startDate <= $date && $date < $this->endDate);
+	}
 }

@@ -9,6 +9,7 @@
 namespace App\Entity\Base;
 
 use App\Entity\Department;
+use App\Entity\Office;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -117,11 +118,34 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
 	private $isSenior = False;
 
 	/**
-	 * @var Department
-	 * @ORM\ManyToOne(targetEntity="App\Entity\Department", inversedBy="children")
-	 * @ORM\JoinColumn(name="department_id", referencedColumnName="id")
+	 * @var Collection
+	 * @ORM\ManyToMany(targetEntity="App\Entity\Department", mappedBy="children")
 	 */
-	private $department;
+	private $departments;
+
+	/**
+	 * @var Collection
+	 * @ORM\ManyToMany(targetEntity="App\Entity\Office", mappedBy="children")
+	 */
+	private $offices;
+
+	/**
+	 * @var string
+	 * @ORM\Column(type="string")
+	 */
+	private $position;
+
+	/**
+	 * @var \DateTimeInterface
+	 * @ORM\Column(type="date")
+	 */
+	private $commenceDate;
+
+	/**
+	 * @var boolean
+	 * @ORM\Column(type="boolean")
+	 */
+	private $isFlaggedforReset = false;
 
 	/**
 	 * @var Collection
@@ -133,7 +157,7 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
 	 * @var Collection
 	 * @ORM\OneToMany(targetEntity="App\Entity\Appraisal\AppraisalResponse", mappedBy="owner")
 	 */
-	private $reponses;
+	private $responses;
 
 	public function __construct() {
 		parent::__construct();
@@ -346,13 +370,6 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
 	}
 
 	/**
-	 * @return Department
-	 */
-	public function getDepartment(): Department {
-		return $this->department;
-	}
-
-	/**
 	 * @param Department $department
 	 */
 	public function setDepartment(Department $department): void {
@@ -362,15 +379,91 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
 	/**
 	 * @return Collection
 	 */
-	public function getAppraisals(): Collection {
+	public function getAppraisals():? Collection {
 		return $this->appraisals;
 	}
 
 	/**
 	 * @return Collection
 	 */
-	public function getReponses(): Collection {
-		return $this->reponses;
+	public function getResponses():? Collection {
+		return $this->responses;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getDepartment(): string {
+		$rtn = [];
+		foreach ($this->departments as $dep) {
+			/* @var Department $dep */
+			$rtn[] = $dep->getName();
+		}
+		return implode(" / ", $rtn);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getOffice(): string {
+		$rtn = [];
+		foreach ($this->offices as $office) {
+			/* @var Office $office */
+			$rtn[] = $office->getName();
+		}
+		return implode(" / ", $rtn);
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getPosition(): string {
+		return $this->position;
+	}
+
+	/**
+	 * @param string $position
+	 * @return User
+	 */
+	public function setPosition(string $position): User {
+		$this->position = $position;
+		return $this;
+	}
+
+	/**
+	 * @return \DateTimeInterface
+	 */
+	public function getCommenceDate(): \DateTimeInterface {
+		return $this->commenceDate;
+	}
+
+	/**
+	 * @param \DateTimeInterface $commenceDate
+	 * @return User
+	 */
+	public function setCommenceDate(\DateTimeInterface $commenceDate): User {
+		if ($commenceDate instanceof \DateTime) {
+			$this->commenceDate = \DateTimeImmutable::createFromMutable($commenceDate);
+		} else {
+			$this->commenceDate = $commenceDate;
+		}
+		return $this;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isFlaggedforReset(): bool {
+		return $this->isFlaggedforReset;
+	}
+
+	/**
+	 * @param bool $isFlaggedforReset
+	 * @return User
+	 */
+	public function setIsFlaggedforReset(bool $isFlaggedforReset): User {
+		$this->isFlaggedforReset = $isFlaggedforReset;
+		return $this;
 	}
 
 

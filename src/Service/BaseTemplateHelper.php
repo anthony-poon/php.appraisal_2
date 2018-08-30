@@ -46,6 +46,11 @@ class BaseTemplateHelper {
 				"url" => $router->generate("admin_list_user_group"),
 				"isVisible" => in_array("ROLE_ADMIN", $this->role),
 				"indent" => true,
+			], [
+				"text" => "Appraisal Period",
+				"url" => $router->generate("appraisal_period_list_period"),
+				"isVisible" => in_array("ROLE_ADMIN", $this->role),
+				"indent" => true,
 			]
 		];
     }
@@ -118,5 +123,7 @@ class BaseTemplateHelper {
 		return $this->js;
 	}
 
-
+	public function getParamEncoded() {
+		return json_encode($this->jsParam);
+	}
 }

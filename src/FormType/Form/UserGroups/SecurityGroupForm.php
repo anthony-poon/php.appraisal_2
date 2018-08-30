@@ -16,13 +16,14 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 class SecurityGroupForm extends AbstractType {
 	public function buildForm(FormBuilderInterface $builder, array $options) {
 		$dataObj = $builder->getData();
 		$builder->add('name', TextType::class)
 			->add("siteToken", TextType::class)
-			->add("children", CompositeCollectionType::class, [
+			->add("children", CollectionType::class, [
 				// TODO: Better ordering and display
 				"entry_type" => EntityType::class,
 				"label" => "Members",

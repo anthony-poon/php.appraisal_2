@@ -39,6 +39,7 @@ abstract class AppraisalAbstract {
 	/**
 	 * @var AppraisalPeriod
 	 * @ORM\ManyToOne(targetEntity="AppraisalPeriod", inversedBy="appraisals")
+	 * @ORM\JoinColumn(name="period_id", referencedColumnName="id")
 	 */
     private $period;
 
@@ -154,4 +155,6 @@ abstract class AppraisalAbstract {
 	abstract function getTemplate(): string;
 
 	abstract function getRenderData(): array;
+
+	abstract function initiate();
 }

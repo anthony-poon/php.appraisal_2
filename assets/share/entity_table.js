@@ -3,56 +3,54 @@ import 'datatables.net-bs4';
 import 'datatables.net-buttons-bs4/js/buttons.bootstrap4';
 import 'datatables.net-select-bs4/js/select.bootstrap4';
 import 'datatables.net-responsive-bs4/js/responsive.bootstrap4';
+import URI from "urijs";
+import 'urijs/src/URITemplate';
 
-export default class CRUDTable {
+export default class EntityTable {
     constructor(options) {
-        this.element = options.element;
-        this.createAction = options.createAction;
-        this.readAction = options.readAction;
-        this.updateAction = options.updateAction;
-        this.deleteAction = options.deleteAction;
-        this.btn = [];
-        if (this.createAction) {
-            this.btn.push({
-                text: "Create",
-                className: "create-btn",
-                action: this.createAction
-            })
-        }
-        if (this.readAction) {
-            this.btn.push({
-                text: "View",
-                className: "read-btn",
-                action: this.readAction
-            })
-        }
-        if (this.updateAction) {
-            this.btn.push({
-                text: "Edit",
-                className: "update-btn",
-                action: this.updateAction
-            })
-        }
-        if (this.deleteAction) {
-            this.btn.push({
-                text: "Delete",
-                className: "delete-btn",
-                action: this.deleteAction
-            })
-        }
-        $.each(options.btn, (k, v)=> {
-            this.btn.push(v)
-        })
+        this.el = options.el;
+        this.addPath = $(this.el).data("add-path");
+        this.editPath = $(this.el).data("edit-path");
+        this.delPath = $(this.el).data("del-path");
     }
 
     init() {
-        this.table = $(this.element).DataTable({
-            "select": "row",
+        this.table = $(this.el).DataTable({
+            "select": {
+                "style": "single"
+            },
             "responsive": true,
             "dom":  "<'row table_btn_grp'<'col-sm-12 col-md-6'B><'col-sm-12 col-md-6'f>>" +
             "<'row'<'col-sm-12'tr>>" +
             "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
-            "buttons": this.btn,
+            "buttons": [
+                {
+                    text: "Create",
+                    className: "create-btn",
+                    action: (e, dt, node, config) => {
+                        location.href = this.addPath
+                    },
+
+                },{
+                    text: "Edit",
+                    className: "update-btn",
+                    action: (e, dt, node, config) => {
+                        let id = parseInt(dt.rows(".selected").ids().toArray()[0]);
+                        location.href = URI.expand(this.editPath, {
+                            id: id
+                        });
+                    }
+                }, {
+                    text: "Delete",
+                    className: "delete-btn",
+                    action: (e, dt, node, config) =>    {
+                        let id = parseInt(dt.rows(".selected").ids().toArray()[0]);
+                        location.href = URI.expand(this.delPath, {
+                            id: id
+                        });
+                    }
+                }
+            ],
         });
         this.table.buttons(".delete-btn").disable();
         this.table.buttons(".update-btn").disable();
