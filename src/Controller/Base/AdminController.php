@@ -12,11 +12,9 @@ use App\FormType\Form\Users\CreateUsersForm;
 use App\FormType\Form\Users\EditUsersForm;
 use App\FormType\Form\UserGroups\EditDirectoryGroupsForm;
 use App\Service\BaseTemplateHelper;
-use Symfony\Component\Form\Extension\Core\Type\FileType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Service\EntityTableHelper;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\RouterInterface;
@@ -38,17 +36,29 @@ class AdminController extends Controller {
     /**
      * @Route("/admin/users", name="admin_list_user")
      */
-    public function listUser(BaseTemplateHelper $helper, RouterInterface $router) {
+    public function listUser(EntityTableHelper $helper, RouterInterface $router) {
         $repo = $this->getDoctrine()->getRepository(User::class);
-        $userList = $repo->findAll();
-        $helper->addJsParam([
-            "addPath" => $this->generateUrl("admin_create_user"),
-            "editPath" => $router->getRouteCollection()->get("admin_edit_user")->getPath(),
-            "deletePath" => $router->getRouteCollection()->get("api_admin_delete_user")->getPath(),
-        ]);
-        return $this->render('render/admin/list_user.html.twig', [
-            "userList" => $userList
-        ]);
+        $users = $repo->findAll();
+        $helper->setAddPath("admin_create_user");
+        $helper->setDelPath("admin_delete_user");
+        $helper->setEditPath("admin_edit_user");
+        $helper->setHeader([
+        	"#",
+			"Username",
+			"Full Name",
+			"Email"
+		]);
+        $helper->setTitle("Users");
+        foreach ($users as $u) {
+        	/* @var User $u */
+			$helper->addRow($u->getId(), [
+				$u->getId(),
+				$u->getUsername(),
+				$u->getFullName(),
+				$u->getEmail()
+			]);
+		}
+        return $this->render("render/entity_table.html.twig", $helper->compile());
     }
 
     /**
@@ -81,7 +91,7 @@ class AdminController extends Controller {
         $repo = $this->getDoctrine()->getRepository(User::class);
         $user = $repo->find($id);
         if (!$user) {
-            throw new HttpException(404, "Unable to locate entity.");
+            throw new NotFoundHttpException("Unable to locate entity.");
         }
         $form = $this->createForm(EditUsersForm::class, $user);
         $form->handleRequest($request);
@@ -105,19 +115,47 @@ class AdminController extends Controller {
     }
 
 	/**
+	 * @Route("/admin/users/delete/{id}",
+	 *     name="admin_delete_user")
+	 */
+	public function deleteUser(int $id) {
+		$repo = $this->getDoctrine()->getRepository(User::class);
+		$user = $repo->find($id);
+		if (!$user) {
+			throw new NotFoundHttpException("Unable to locate entity.");
+		}
+		$em = $this->getDoctrine()->getManager();
+		$em->remove($user);
+		$em->flush($user);
+		return $this->redirectToRoute("admin_list_user");
+	}
+
+	/**
 	 * @Route("/admin/user-groups", name="admin_list_user_group")
 	 */
-    public function listUserGroup(BaseTemplateHelper $helper, RouterInterface $router) {
+    public function listUserGroup(EntityTableHelper $helper, RouterInterface $router) {
         $grpRepo = $this->getDoctrine()->getRepository(DirectoryGroup::class);
-        $grpList = $grpRepo->findAll();
-        $helper->addJsParam([
-        	"addPath" => $this->generateUrl("admin_create_user_group"),
-			"editPath" => $router->getRouteCollection()->get("admin_edit_user_group")->getPath(),
-			"deletePath" => $router->getRouteCollection()->get("api_admin_delete_user_group")->getPath()
+        $grps = $grpRepo->findAll();
+        $helper->setHeader([
+        	"#",
+			"Group Name",
+			"Group Type",
+			"Member count"
 		]);
-        return $this->render("render/admin/list_user_group.html.twig", [
-        	"grpList" => $grpList
-		]);
+        foreach ($grps as $g) {
+        	/* @var DirectoryGroup $g */
+        	$helper->addRow($g->getId(), [
+        		$g->getId(),
+				$g->getName(),
+				$g->getFriendlyClassName(),
+				$g->getChildren()->count()
+			]);
+		}
+        $helper->setAddPath("admin_create_user_group");
+        $helper->setEditPath("admin_edit_user_group");
+        $helper->setDelPath("admin_delete_user_group");
+        $helper->setTitle("User Groups");
+        return $this->render("render/entity_table.html.twig", $helper->compile());
     }
 
 	/**
@@ -165,10 +203,13 @@ class AdminController extends Controller {
 	/**
 	 * @Route("/admin/user-groups/{id}", name="admin_edit_user_group", requirements={"id"="\d+"})
 	 */
-	public function editUserGroup(BaseTemplateHelper $helper, Request $request, int $id) {
+	public function editUserGroup(Request $request, int $id) {
 		$em = $this->getDoctrine()->getManager();
 		$groupRepo = $this->getDoctrine()->getRepository(DirectoryGroup::class);
 		$group = $groupRepo->find($id);
+		if (empty($group)) {
+			throw new NotFoundHttpException("Unable to locate entity.");
+		}
 		switch (get_class($group)) {
 			case SecurityGroup::class:
 				$form = $this->createForm(SecurityGroupForm::class, $group);
@@ -198,43 +239,21 @@ class AdminController extends Controller {
 		]);
 	}
 
-    /**
-     * @Route("/api/admin/users/delete",
-     *     name="api_admin_delete_user",
-     *     methods={"POST", "DELETE"})
-     */
-    public function deleteUser(Request $request) {
-        $idArr = json_decode($request->getContent(), true);
-        $userArr = $this->getDoctrine()->getRepository(User::class)->findBy([
-            "id" => $idArr
-        ]);
-        $em = $this->getDoctrine()->getManager();
-        foreach ($userArr as $user) {
-            $em->remove($user);
-        }
-        $em->flush();
-        return new JsonResponse([
-            "status" => "success"
-        ]);
-    }
+
 
 	/**
-	 * @Route("/api/admin/user-groups/delete",
-	 *     name="api_admin_delete_user_group",
-	 *     methods={"POST", "DELETE"})
+	 * @Route("/admin/user-groups/delete/{id}",
+	 *     name="admin_delete_user_group")
 	 */
-	public function deleteUserGroup(Request $request) {
-		$idArr = json_decode($request->getContent(), true);
-		$grpList = $this->getDoctrine()->getRepository(DirectoryGroup::class)->findBy([
-			"id" => $idArr
-		]);
-		$em = $this->getDoctrine()->getManager();
-		foreach ($grpList as $group) {
-			$em->remove($group);
+	public function deleteUserGroup(int $id) {
+		$repo = $this->getDoctrine()->getRepository(DirectoryGroup::class);
+		$grp = $repo->find($id);
+		if (!$grp) {
+			throw new NotFoundHttpException("Unable to locate entity.");
 		}
+		$em = $this->getDoctrine()->getManager();
+		$em->remove($grp);
 		$em->flush();
-		return new JsonResponse([
-			"status" => "success"
-		]);
+		return $this->redirectToRoute("admin_list_user_group");
 	}
 }
