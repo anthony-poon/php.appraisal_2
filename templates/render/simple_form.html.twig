@@ -43,7 +43,7 @@
                     %}
                     <div class="row mt-2">
                         <div class="text-center col-sm-10 offset-sm-2 text-primary btn-like">
-                            <i class="material-icons p-1" data-collection-container="#{{ row.vars.id }}-container" data-collection-prototype="{{ prototype|e('html_attr') }}">add</i>
+                            <i class="material-icons p-1" data-index="{{ row|length }}" data-collection-container="#{{ row.vars.id }}-container" data-collection-prototype="{{ prototype|e('html_attr') }}">add</i>
                         </div>
                     </div>
                 {% else %}
