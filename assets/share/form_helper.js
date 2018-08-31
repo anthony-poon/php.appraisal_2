@@ -10,7 +10,7 @@ function bindDOMElement() {
             index = $(container).children().length;
         }
         prototype = prototype.replace(/__name__/g, index);
-        $(evt).data("index", index + 1);
+        $(evt.target).data("index", index + 1);
         $(container).append(prototype);
     });
 }
