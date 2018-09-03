@@ -14,43 +14,7 @@
     </div>
     <div class="row">
         <div class="col-md-8">
-            {{ form_start(form) }}
-            {% for row in form %}
-                {% if row.vars.allow_add is defined and row.vars.allow_add %}
-                    <div class="row form-group">
-                        {{ form_label(row) }}
-                        <div class="col-sm-10" id="{{ row.vars.id }}-container">
-                            {{ form_errors(form) }}
-                            {% for c in row %}
-                                <div class="row mb-1">
-                                    <div class="col-sm-1 d-flex justify-content-center align-items-center text-danger btn-like">
-                                        <i class="material-icons p-1" data-collection-remove>clear</i>
-                                    </div>
-                                    <div class="col-sm-11">
-                                        {{ form_widget(c) }}
-                                    </div>
-                                </div>
-                            {% endfor %}
-                        </div>
-                    </div>
-                    {% set prototype = "
-                        <div class='row mb-1'>
-                            <div class='col-sm-1 d-flex justify-content-center align-items-center text-danger btn-like'>
-                                <i class='material-icons p-1' data-collection-remove>clear</i>
-                            </div>
-                            <div class='col-sm-11'>" ~ form_widget(row.vars.prototype) ~ "</div>
-                        </div>"
-                    %}
-                    <div class="row mt-2">
-                        <div class="text-center col-sm-10 offset-sm-2 text-primary btn-like">
-                            <i class="material-icons p-1" data-index="{{ row|length }}" data-collection-container="#{{ row.vars.id }}-container" data-collection-prototype="{{ prototype|e('html_attr') }}">add</i>
-                        </div>
-                    </div>
-                {% else %}
-                    {{ form_row(row, {"id": row.vars.id}) }}
-                {% endif %}
-            {% endfor %}
-            {{ form_end(form, {'render_rest': false}) }}
+            {{ form(form) }}
         </div>
     </div>
 {% endblock %}

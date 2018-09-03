@@ -2,35 +2,27 @@
 
 {% block composite_collection_widget %}
     {% spaceless %}
-    <div class="row" id="{{ form.vars.id }}">
-        <div class="col collection-container">
-            <div class="row mb-3 collection-prototype" style="display: none;">
-                <div class="col">
-                    {{ form_widget(prototype) }}
-                </div>
-                <div class="col-auto">
-                    <div class="col-auto">
-                        <i class="material-icons text-danger btn-like">clear</i>
-                    </div>
-                </div>
+    {% set max_index = 0 %}
+    <div id="{{ form.vars.id }}-container" >
+        {% for child in form %}
+            <div data-index="{{ child.vars.name }}" class="d-flex align-items-center form-group">
+                {{ form_widget(child) }}
+                <i class="material-icons text-danger btn-like p-1 ml-2" data-collection-remove>clear</i>
             </div>
-            {% for child in form %}
-                <div class="row mb-3" id="{{ child.vars.id }}">
-                    <div class="col">
-                        {{ form_widget(child) }}
-                    </div>
-                    <div class="col-auto">
-                        <div class="col-auto">
-                            <i class="material-icons text-danger btn-like" data-collection-delete="#{{ child.vars.id }}">clear</i>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
+            {% if max_index < child.vars.name %}
+                {% set max_index = child.vars.name %}
+            {% endif %}
+        {% endfor %}
     </div>
+    {% set prototype = "
+        <div class='d-flex align-items-center form-group'>
+            " ~ form_widget(form.vars.prototype) ~ "
+            <i class='material-icons text-danger btn-like p-1 ml-2' data-collection-remove>clear</i>
+        </div>"
+    %}
     <div class="row">
         <div class="col text-center">
-            <i data-collection-add="#{{ form.vars.id }}" class="material-icons text-primary btn-like">add</i>
+            <i class="material-icons text-primary btn-like p-1" data-index="{{ max_index }}" data-collection-container="#{{ form.vars.id }}-container" data-collection-prototype="{{ prototype|e('html_attr') }}">add</i>
         </div>
     </div>
     {% endspaceless %}

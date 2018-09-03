@@ -27,9 +27,6 @@ class SecurityGroupForm extends AbstractType {
 				// TODO: Better ordering and display
 				"entry_type" => EntityType::class,
 				"label" => "Members",
-				"allow_add" => true,
-				"allow_delete" => true,
-				"prototype" => true,
 				"entry_options" => [
 					"class" => DirectoryObject::class,
 					"choice_label" => "friendlyName",

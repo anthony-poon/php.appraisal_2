@@ -226,6 +226,7 @@ class AdminController extends Controller {
 				$form->handleRequest($request);
 				if ($form->isSubmitted() && $form->isValid()) {
 					$group = $form->getData();
+					var_dump($group->getChildren());
 					$em->persist($group);
 					$em->flush();
 					$this->redirectToRoute("admin_list_user_group");
