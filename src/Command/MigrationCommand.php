@@ -312,7 +312,7 @@ class MigrationCommand extends Command {
 				$json = $ownerResponse->getJsonData();
 				$json["part_a"] = [];
 				foreach ($data["part_a"] as $qNo => $q) {
-					$json["part_a"]["q_".$qNo] = [
+					$json["part_a"][$qNo - 1] = [
 						"respon_name" => $q["respon_name"],
 						"respon_result" => $q["respon_result"],
 					];
@@ -339,7 +339,7 @@ class MigrationCommand extends Command {
 						$json = $appraiserResponse->getJsonData();
 						$json["part_a"] = [];
 						foreach ($data["part_a"] as $qNo => $q) {
-							$json["part_a"]["q_".$qNo] = [
+							$json["part_a"][$qNo - 1] = [
 								"respon_comment" => $q["respon_comment"],
 								"respon_weight" => $q["respon_weight"],
 								"respon_score" => $q["respon_score"],
@@ -417,7 +417,7 @@ class MigrationCommand extends Command {
 				$json = $ownerResponse->getJsonData();
 				$json["part_b1"] = [];
 				foreach ($data["part_b1"] as $qNo => $q) {
-					$json["part_b1"]["q_".$qNo] = [
+					$json["part_b1"][$qNo - 1] = [
 						"self_example" => $q["self_example"],
 						"self_score" => $q["self_score"],
 					];
@@ -444,7 +444,7 @@ class MigrationCommand extends Command {
 						$json = $appraiserResponse->getJsonData();
 						$json["part_b1"] = [];
 						foreach ($data["part_b1"] as $qNo => $q) {
-							$json["part_b1"]["q_".$qNo] = [
+							$json["part_b1"][$qNo - 1] = [
 								"appraiser_example" => $q["appraiser_example"],
 								"appraiser_score" => $q["appraiser_score"],
 							];
@@ -520,7 +520,7 @@ class MigrationCommand extends Command {
 				$json = $ownerResponse->getJsonData();
 				$json["part_b2"] = [];
 				foreach ($data["part_b2"] as $qNo => $q) {
-					$json["part_b2"]["q_".$qNo] = [
+					$json["part_b2"][$qNo - 1] = [
 						"self_example" => $q["self_example"],
 						"self_score" => $q["self_score"],
 					];
@@ -547,7 +547,7 @@ class MigrationCommand extends Command {
 						$json = $appraiserResponse->getJsonData();
 						$json["part_b2"] = [];
 						foreach ($data["part_b2"] as $qNo => $q) {
-							$json["part_b2"]["q_".$qNo] = [
+							$json["part_b2"][$qNo - 1] = [
 								"appraiser_example" => $q["appraiser_example"],
 								"appraiser_score" => $q["appraiser_score"],
 							];
@@ -630,7 +630,7 @@ class MigrationCommand extends Command {
 						$json = $appraiserResponse->getJsonData();
 						$json["part_d"] = [];
 						foreach ($data["part_d"] as $qNo => $q) {
-							$json["part_d"]["q_".$qNo] = [
+							$json["part_d"][$qNo - 1] = [
 								"key_respon" => $q["key_respon"],
 								"goal_name" => $q["goal_name"],
 								"measurement_name" => $q["measurement_name"],

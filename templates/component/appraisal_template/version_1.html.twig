@@ -73,7 +73,7 @@
                 <div class="col">
                     <div class="form-group">
                         <label>Type of Appraisal</label>
-                        <input type="text" class="form-control form-control-sm" name="appraisal[]"/>
+                        <input type="text" class="form-control form-control-sm"/>
                     </div>
                 </div>
             </div>
@@ -117,11 +117,13 @@
 
             </div>
             <div id="part-a-wrapper">
+                <div id="part-a-container">
 
+                </div>
                 <div class="row mt-3 md-3">
                     <div class="col text-center">
                         {% set prototype = include("component/appraisal_template/version_1_a.html.twig") %}
-                        <i class="material-icons text-primary p-2 btn-like" data-prototype="{{ prototype }}">add</i>
+                        <i class="material-icons text-primary p-2 btn-like" data-collection-container="#part-a-container" data-collection-prototype="{{ prototype|e('html_attr') }}">add</i>
                     </div>
                 </div>
 
@@ -231,12 +233,12 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][q_1][self_score]"/>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][q_0][self_score]"/>
                                                 </div>
 
                                                 <div class="d-flex h-100 flex-column form-group">
                                                     <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][q_1][self_example]"></textarea>
+                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][q_0][self_example]"></textarea>
                                                 </div>
                                             </div>
                                             <div class="ml-3 col rhs h-100 d-flex flex-column">
@@ -245,12 +247,12 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][q_1][appraiser_score]"/>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][q_0][appraiser_score]"/>
                                                 </div>
 
                                                 <div class="d-flex h-100 flex-column form-group">
                                                     <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][q_1][appraiser_example]"></textarea>
+                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][q_0][appraiser_example]"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -278,6 +280,63 @@
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
                                             <small>1. Ignores potential problems, 'not my problem attitude', blames others for problems rather than helps to resolve problems.</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-7">
+                                        <div class="row h-100">
+                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
+                                                <div class="border-bottom mb-2 pb-2">
+                                                    Self Assessment
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Score</label>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5"  name="appraisal[part_b1][q_1][self_score]"/>
+                                                </div>
+
+                                                <div class="d-flex h-100 flex-column">
+                                                    <label>Example</label>
+                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][q_1][self_example]"></textarea>
+                                                </div>
+                                            </div>
+                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
+                                                <div class="border-bottom mb-2 pb-2">
+                                                    Assessment by Appraising Officer
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Score</label>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][q_1][appraiser_score]"/>
+                                                </div>
+
+                                                <div class="d-flex h-100 flex-column">
+                                                    <label>Example</label>
+                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][q_1][appraiser_example]"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mb-5">
+                            <div class="col">
+                                <p>Customer Focus</p>
+                                <div class="row">
+                                    <div class="col-5 lhs">
+                                        <div class="pb-1 mb-1 border-bottom">
+                                            <small >5. Exceeds customers' expectations, develops mutually beneficial relationships with customers.</small>
+                                        </div>
+                                        <div class="pb-1 mb-1 border-bottom">
+                                            <small>4. Has an in-depth understanding of customer needs (gained via experience and research), use this build customer confidence, to develop improvements in customer service levels and relationships.</small>
+                                        </div>
+                                        <div class="pb-1 mb-1 border-bottom">
+                                            <small>3. Has correct understanding of customer needs, received good customer feedback, responding appropriately to customer issues and displays a concern to improve customer service levels.</small>
+                                        </div>
+                                        <div class="pb-1 mb-1 border-bottom">
+                                            <small>2. Has no record of working with internal or external customers.</small>
+                                        </div>
+                                        <div class="pb-1 mb-1 border-bottom">
+                                            <small>1. Has no observable desire to provide service to others. Past customers have requested that this person does no further work/is removed from site.</small>
                                         </div>
                                     </div>
                                     <div class="col-7">
@@ -318,23 +377,23 @@
 
                         <div class="row mb-5">
                             <div class="col">
-                                <p>Customer Focus</p>
+                                <p>Initiative</p>
                                 <div class="row">
                                     <div class="col-5 lhs">
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Exceeds customers' expectations, develops mutually beneficial relationships with customers.</small>
+                                            <small >5. Has a record of creating, seizing and driving new ideas and opportunities to implementation.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Has an in-depth understanding of customer needs (gained via experience and research), use this build customer confidence, to develop improvements in customer service levels and relationships.</small>
+                                            <small>4. Anticipates problems and takes per-emptive action to deal with them, has a record of evaluating problems and developing more effective ways of doing things.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Has correct understanding of customer needs, received good customer feedback, responding appropriately to customer issues and displays a concern to improve customer service levels.</small>
+                                            <small>3. Gets on with jobs, does not need asking to do things and generates ideas for helping to resolve issues.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. Has no record of working with internal or external customers.</small>
+                                            <small>2. No evidence of using initiative and seizing opportunities to take action.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Has no observable desire to provide service to others. Past customers have requested that this person does no further work/is removed from site.</small>
+                                            <small>1. Shows no initiative at all, has to be asked to do things and requires supervision and guidance or set procedures to follow.</small>
                                         </div>
                                     </div>
                                     <div class="col-7">
@@ -375,23 +434,23 @@
 
                         <div class="row mb-5">
                             <div class="col">
-                                <p>Initiative</p>
+                                <p>Attention to Detail</p>
                                 <div class="row">
                                     <div class="col-5 lhs">
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Has a record of creating, seizing and driving new ideas and opportunities to implementation.</small>
+                                            <small>5. Consistently high standard with work right first time, sets an example to others and source of advice and guidance.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Anticipates problems and takes per-emptive action to deal with them, has a record of evaluating problems and developing more effective ways of doing things.</small>
+                                            <small>4. Shows concern for quality, produces high quality work which is mostly right first time.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Gets on with jobs, does not need asking to do things and generates ideas for helping to resolve issues.</small>
+                                            <small>3. Concentrates, checks that work is accurate, make few mistakes and learns from them. Seeks advice/help as appropriate.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. No evidence of using initiative and seizing opportunities to take action.</small>
+                                            <small>2. No evidence of concern for quality of the job.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Shows no initiative at all, has to be asked to do things and requires supervision and guidance or set procedures to follow.</small>
+                                            <small>1. Makes careless and simple mistakes, work in generally sloppy and has to be checked or re-worked, shows no concern for quality standards. Mistakes have impact on service quality.</small>
                                         </div>
                                     </div>
                                     <div class="col-7">
@@ -402,7 +461,7 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5"  name="appraisal[part_b1][q_4][self_score]"/>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][q_4][self_score]"/>
                                                 </div>
 
                                                 <div class="d-flex h-100 flex-column">
@@ -432,23 +491,23 @@
 
                         <div class="row mb-5">
                             <div class="col">
-                                <p>Attention to Detail</p>
+                                <p>Problem Solving and Decision Making</p>
                                 <div class="row">
                                     <div class="col-5 lhs">
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>5. Consistently high standard with work right first time, sets an example to others and source of advice and guidance.</small>
+                                            <small >5. Has record of developing timely solutions for major problems, looks at wider issues, is creative and uses wide range of tools and sources to develop solutions.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Shows concern for quality, produces high quality work which is mostly right first time.</small>
+                                            <small>4. Has record of analysing and developing solutions to complex problems, searches widely for options, aware and proficient in a variety of techniques. Offered new ideas and solutions that are not tied to past method and result in order to increase the value of work.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Concentrates, checks that work is accurate, make few mistakes and learns from them. Seeks advice/help as appropriate.</small>
+                                            <small>3. Has record of handling straight forward problems and developing workable solutions including but not limited to reorganize work unit structure, job assignment or resources. Offered constructive and practical suggestions to tackle work problems.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. No evidence of concern for quality of the job.</small>
+                                            <small>2. No evidence of successful problem solving skills and not willing to handle challenging tasks or accept changes in role or situation.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Makes careless and simple mistakes, work in generally sloppy and has to be checked or re-worked, shows no concern for quality standards. Mistakes have impact on service quality.</small>
+                                            <small>1. Is generally unsuccessful in solving problems or takes longer than necessary even with straight forward problems. No concept of whom to ask for support/advice and can handle ordinary routine works only.</small>
                                         </div>
                                     </div>
                                     <div class="col-7">
@@ -489,23 +548,23 @@
 
                         <div class="row mb-5">
                             <div class="col">
-                                <p>Problem Solving and Decision Making</p>
+                                <p>Achieving Results and Compliance</p>
                                 <div class="row">
                                     <div class="col-5 lhs">
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Has record of developing timely solutions for major problems, looks at wider issues, is creative and uses wide range of tools and sources to develop solutions.</small>
+                                            <small >5. Has a record of achieving nearly all goals set on schedule, in budget, and anticipating and managing complexities, changing priorities and needs - 80/20%, while the tasks completed are complying the Company goals, quality objectives, policies and procedures.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Has record of analysing and developing solutions to complex problems, searches widely for options, aware and proficient in a variety of techniques. Offered new ideas and solutions that are not tied to past method and result in order to increase the value of work.</small>
+                                            <small>4. Has a record of mostly achieving goals agreed or set in budget and generally on schedule - 70/30%, while the tasks completed are complying the Company goals, quality objectives, policies and procedures.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Has record of handling straight forward problems and developing workable solutions including but not limited to reorganize work unit structure, job assignment or resources. Offered constructive and practical suggestions to tackle work problems.</small>
+                                            <small>3. Has a record of generally achieving goals agreed - 60/40%, while the tasks completed are complying the quality objectives, policies and procedures.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. No evidence of successful problem solving skills and not willing to handle challenging tasks or accept changes in role or situation.</small>
+                                            <small>2. Not able to demonstrate record of achieving results or more than half of tasks completed are not complying the quality objectives, policies and procedures.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Is generally unsuccessful in solving problems or takes longer than necessary even with straight forward problems. No concept of whom to ask for support/advice and can handle ordinary routine works only.</small>
+                                            <small>1. Fails to achieve own goals and hinders results of others.</small>
                                         </div>
                                     </div>
                                     <div class="col-7">
@@ -546,23 +605,23 @@
 
                         <div class="row mb-5">
                             <div class="col">
-                                <p>Achieving Results and Compliance</p>
+                                <p>Communication and Interpersonal</p>
                                 <div class="row">
                                     <div class="col-5 lhs">
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Has a record of achieving nearly all goals set on schedule, in budget, and anticipating and managing complexities, changing priorities and needs - 80/20%, while the tasks completed are complying the Company goals, quality objectives, policies and procedures.</small>
+                                            <small >5. Highly articulate, using appropriate language and communication styles at all times, listening and feeding back to show understanding.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Has a record of mostly achieving goals agreed or set in budget and generally on schedule - 70/30%, while the tasks completed are complying the Company goals, quality objectives, policies and procedures.</small>
+                                            <small>4. Listens and appropriately tailors communication approach to suit situation or person. Engages the enthusiastic cooperation and wholehearted participation of others in work tasks and relationships.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Has a record of generally achieving goals agreed - 60/40%, while the tasks completed are complying the quality objectives, policies and procedures.</small>
+                                            <small>3. Regularly reports and updates on progress of responsible task, problems and achievements expected by the supervisors. Communicates clearly and concisely, both verbally and written, ensuring information relayed is accurate, listens to what is being communicated and seeks to understand by solid questioning skills.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. Not able to demonstrate record of achieving results or more than half of tasks completed are not complying the quality objectives, policies and procedures.</small>
+                                            <small>2. No evidence of ability to give and receive information with accuracy, cannot explain one's idea and thoughts for acceptance by others.</small>
                                         </div>
                                         <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Fails to achieve own goals and hinders results of others.</small>
+                                            <small>1. Fails to communicate clearly, struggles to put points across verbally or written</small>
                                         </div>
                                     </div>
                                     <div class="col-7">
@@ -593,63 +652,6 @@
                                                 <div class="d-flex h-100 flex-column">
                                                     <label>Example</label>
                                                     <textarea class="form-control flex-grow-1" name="appraisal[part_b1][q_7][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Communication and Interpersonal</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Highly articulate, using appropriate language and communication styles at all times, listening and feeding back to show understanding.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Listens and appropriately tailors communication approach to suit situation or person. Engages the enthusiastic cooperation and wholehearted participation of others in work tasks and relationships.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Regularly reports and updates on progress of responsible task, problems and achievements expected by the supervisors. Communicates clearly and concisely, both verbally and written, ensuring information relayed is accurate, listens to what is being communicated and seeks to understand by solid questioning skills.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. No evidence of ability to give and receive information with accuracy, cannot explain one's idea and thoughts for acceptance by others.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Fails to communicate clearly, struggles to put points across verbally or written</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][q_8][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][q_8][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][q_8][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][q_8][appraiser_example]"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -707,12 +709,12 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_1][self_score]"/>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_0][self_score]"/>
                                                 </div>
 
                                                 <div class="d-flex h-100 flex-column">
                                                     <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_1][self_example]"></textarea>
+                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_0][self_example]"></textarea>
                                                 </div>
                                             </div>
                                             <div class="ml-3 col rhs h-100 d-flex flex-column">
@@ -721,12 +723,12 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_1][appraiser_score]"/>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_0][appraiser_score]"/>
                                                 </div>
 
                                                 <div class="d-flex h-100 flex-column">
                                                     <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_1][appraiser_example]"></textarea>
+                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_0][appraiser_example]"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -764,12 +766,12 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_2][self_score]"/>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_1][self_score]"/>
                                                 </div>
 
                                                 <div class="d-flex h-100 flex-column form-group">
                                                     <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_2][self_example]"></textarea>
+                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_1][self_example]"></textarea>
                                                 </div>
                                             </div>
                                             <div class="ml-3 col rhs h-100 d-flex flex-column">
@@ -778,12 +780,12 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_2][appraiser_score]"/>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_1][appraiser_score]"/>
                                                 </div>
 
                                                 <div class="d-flex h-100 flex-column form-group">
                                                     <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_2][appraiser_example]"></textarea>
+                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_1][appraiser_example]"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -821,12 +823,12 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_3][self_score]"/>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_2][self_score]"/>
                                                 </div>
 
                                                 <div class="d-flex h-100 flex-column">
                                                     <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_3][self_example]"></textarea>
+                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_2][self_example]"></textarea>
                                                 </div>
                                             </div>
                                             <div class="ml-3 col rhs h-100 d-flex flex-column">
@@ -835,12 +837,12 @@
                                                 </div>
                                                 <div class="form-group">
                                                     <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_3][appraiser_score]"/>
+                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_2][appraiser_score]"/>
                                                 </div>
 
                                                 <div class="d-flex h-100 flex-column">
                                                     <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_3][appraiser_example]"></textarea>
+                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_2][appraiser_example]"></textarea>
                                                 </div>
                                             </div>
                                         </div>
@@ -1229,7 +1231,7 @@
                 </div>
             </div>
 
-            <div class="part-d-wrapper">
+            <div id="part-d-wrapper">
                 <div class="row mt-3">
                     <div class="col">
                         <h5 class="title">
@@ -1247,62 +1249,13 @@
                         </p>
                     </div>
                 </div>
-                <div>
-                    <div class="row mb-3" data-prototype="appraisal[part_d]">
-                        <div class="d-flex col-1 justify-content-center align-items-center">
-                            <i class="material-icons text-danger p-1 btn-like">clear</i>
-                        </div>
-                        <div class="col-3 d-flex flex-column">
-                            <label>
-                                <small>
-                                    Key Responsibilities:
-                                </small>
-                            </label>
-                            <textarea class="form-control flex-grow-1" data-proto-name="[key_respon]"></textarea>
-                        </div>
-                        <div class="col-3 d-flex flex-column">
-                            <label>
-                                <small>
-                                    Goals
-                                </small>
-                            </label>
-                            <textarea class="form-control flex-grow-1" data-proto-name="[goal_name]"></textarea>
-                        </div>
-                        <div class="col-4 d-flex flex-column">
-                            <label>
-                                <small>
-                                    Measurements
-                                </small>
-                            </label>
-                            <textarea class="form-control flex-grow-1" data-proto-name="[measurement_name]"></textarea>
-                        </div>
-                        <div class="col-1">
-                            <div class="row mb-2">
-                                <div class="">
-                                    <label>
-                                        <small>
-                                            Weight (%)
-                                        </small>
-                                    </label>
-                                    <input type="number" class="form-control" data-proto-name="[goal_weight]"/>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="">
-                                    <label>
-                                        <small>
-                                            Completion Date
-                                        </small>
-                                    </label>
-                                    <input type="text" class="form-control" data-proto-name="[complete_date]"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div id="part-d-container">
+
                 </div>
+                {% set attr = include("component/appraisal_template/version_1_d.html.twig") %}
                 <div class="row mt-3 md-3">
                     <div class="col text-center">
-                        <i class="material-icons text-primary p-2 btn-like" data-clone="appraisal[part_d]">add</i>
+                        <i class="material-icons text-primary p-2 btn-like" data-collection-container="#part-d-container" data-collection-prototype="{{ attr|e('html_attr') }}">add</i>
                     </div>
                 </div>
             </div>

@@ -14,6 +14,7 @@ use App\Entity\Appraisal\AppraisalPeriod;
 use App\FormType\SurveyForm\Type1;
 use App\Service\BaseTemplateHelper;
 use Doctrine\Common\Collections\ArrayCollection;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -44,7 +45,7 @@ class AppraisalController extends Controller {
 				/* @var AppraisalAbstract $app */
 				$app->setPeriod($p);
 				$app->setOwner($this->getUser());
-				$app->initiate();
+				$app->create();
 				$em = $this->getDoctrine()->getManager();
 				$em->persist($app);
 				$em->flush();
@@ -97,14 +98,59 @@ class AppraisalController extends Controller {
 
 	/**
 	 * @Route("/member/api/appraisal/{id}", name="api_appraisal_view", requirements={"id"="\d+"})
+	 * @Method({"GET"})
 	 */
-	public function ajaxViewAppraisal(int $id) {
+	public function ajaxGet(int $id) {
 		$appRepo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
 		$app = $appRepo->find($id);
 		/* @var \App\Entity\Appraisal\AppraisalAbstract $app */
 		if (empty($app)) {
 			$this->createNotFoundException("Unable to locate appraisal");
 		}
-		return new JsonResponse($app->getRenderData());
+		return new JsonResponse($app->read());
+	}
+
+	/**
+	 * @Route("/member/api/appraisal/{id}", requirements={"id"="\d+"})
+	 * @Method({"POST"})
+	 */
+	public function ajaxPost(int $id, Request $request) {
+		$role = $request->request->get("role") ?? "owner";
+		$appRepo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
+		$app = $appRepo->find($id);
+		$user = $this->getUser();
+		/* @var \App\Entity\Appraisal\AppraisalAbstract $app */
+		if (empty($app)) {
+			$this->createNotFoundException("Unable to locate appraisal");
+		}
+		$rqJson =  json_decode($request->getContent(), true);
+		foreach ($rqJson as $fieldName => $value) {
+			$app->update($user, $role, $fieldName, $value);
+		}
+		$em = $this->getDoctrine()->getManager();
+		$em->persist($app);
+		$em->flush();
+		return new JsonResponse([
+			"status" => "success"
+		]);
+	}
+
+	/**
+	 * @Route("/member/api/appraisal/{id}", requirements={"id"="\d+"})
+	 * @Method({"DELETE"})
+	 */
+	public function ajaxDelete(int $id, Request $request) {
+		$role = $request->request->get("role") ?? "owner";
+		$appRepo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
+		$app = $appRepo->find($id);
+		$user = $this->getUser();
+		/* @var \App\Entity\Appraisal\AppraisalAbstract $app */
+		if (empty($app)) {
+			$this->createNotFoundException("Unable to locate appraisal");
+		}
+		$rqJson = json_decode($request->getContent(), true);
+		foreach ($rqJson as $fieldName) {
+			$app->delete($user, $role, $fieldName);
+		}
 	}
 }

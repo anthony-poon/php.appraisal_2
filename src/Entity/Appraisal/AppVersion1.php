@@ -9,6 +9,7 @@
 namespace App\Entity\Appraisal;
 
 use App\Entity\Appraisal\AppraisalAbstract;
+use App\Entity\Base\User;
 use Doctrine\ORM\Mapping as ORM;
 /**
  * Class AppVersion1
@@ -26,7 +27,7 @@ class AppVersion1 extends AppraisalAbstract {
 		return "component/appraisal_template/version_1.html.twig";
 	}
 
-	function getRenderData(): array {
+	function read(): array {
 		$json = $this->getJsonData();
 		$owner = $this->getOwner();
 		/* @var \App\Entity\Appraisal\AppraisalResponse $ownerResponse */
@@ -37,48 +38,22 @@ class AppVersion1 extends AppraisalAbstract {
 		$appraiserResponse = $this->getResponses()->filter(function (AppraisalResponse $rsp) {
 			return $rsp->getResponseType() === "appraiser";
 		})->first();
-		$json["part_a"] = [];
-		$json["part_b1"] = [];
-		$json["part_b2"] = [];
-		$json["part_d"] = [];
 
 		if ($ownerResponse) {
 			$ownJson = $ownerResponse->getJsonData();
-			if (isset($ownJson["part_a"])) {
-				$json["part_a"] = $ownJson["part_a"];
-			}
-			if (isset($ownJson["part_b1"])) {
-				$json["part_b1"] = $ownJson["part_b1"];
-			}
-			if (isset($ownJson["part_b2"])) {
-				$json["part_b2"] = $ownJson["part_b2"];
-			}
-			if (isset($ownJson["part_d"])) {
-				$json["part_d"] = $ownJson["part_d"];
-			}
+			$json = array_replace_recursive($json, $ownJson);
 		}
 
 		if ($appraiserResponse) {
 			$appJson = $appraiserResponse->getJsonData();
-			if (isset($appJson["part_a"])) {
-				$json["part_a"] = array_merge_recursive($json["part_a"], $appJson["part_a"]);
-			}
-			if (isset($appJson["part_b1"])) {
-				$json["part_b1"] = array_merge_recursive($json["part_b1"], $appJson["part_b1"]);
-			}
-			if (isset($appJson["part_b2"])) {
-				$json["part_b2"] = array_merge_recursive($json["part_b2"], $appJson["part_b2"]);
-			}
-			if (isset($appJson["part_d"])) {
-				$json["part_d"] = array_merge_recursive($json["part_d"], $appJson["part_d"]);
-			}
+			$json = array_replace_recursive($json, $appJson);
 		}
 
 		$json["id"] = $this->getId();
 		return $json;
 	}
 
-	function initiate() {
+	function create() {
 		$owner = $this->getOwner();
 		$period = $this->getPeriod();
 		$appraisers = $owner->getAppraisers();
@@ -104,6 +79,69 @@ class AppVersion1 extends AppraisalAbstract {
 			"countersigner_name" => $coStr,
 			"survey_type" => "Annual Appraisal"
 		]);
+	}
+
+	function update(User $user, string $role, string $fieldName, $value) {
+		$rsp = $this->getResponses()->filter(function(AppraisalResponse $rsp) use ($user, $role){
+			return ($rsp->getOwner()->getId() === $user->getId()) && ($rsp->getResponseType() === $role);
+		})->first();
+		/* @var $rsp \App\Entity\Appraisal\AppraisalResponse */
+		if (!$rsp) {
+			$rsp = new AppraisalResponse();
+			$rsp->setOwner($user);
+			$rsp->setAppraisal($this);
+			$rsp->setResponseType($role);
+			$this->getResponses()->add($rsp);
+		}
+		$rspJson = $rsp->getJsonData() ?? [];
+		$rtn = [];
+		$ptr = &$rtn;
+		// Field name of form is prefix[depth_1][depth_2][depth_3]
+		// Explode the field name using regex
+		if (preg_match_all("/\[([\w\d_\-]+)\]/", $fieldName, $delimited)) {
+			// Capture group is stored in [1]
+			$captureGrp = $delimited[1];
+			for ($i = 0; $i < count($captureGrp); $i++) {
+				// If is last element
+				if ($i == count($captureGrp) - 1) {
+					$ptr[$captureGrp[$i]] = $value;
+				} else {
+					$ptr[$captureGrp[$i]] = [];
+					// Walk 1 level deeper
+					$ptr = &$ptr[$captureGrp[$i]];
+				}
+			}
+		}
+		$rsp->setJsonData(array_replace_recursive($rspJson, $rtn));
+	}
+
+	function delete(User $user, string $role, string $fieldName) {
+		// TODO: Implement delete() method.
+		$rsp = $this->getResponses()->filter(function(AppraisalResponse $rsp) use ($user, $role){
+			return ($rsp->getOwner()->getId() === $user->getId()) && ($rsp->getResponseType() === $role);
+		})->first();
+		/* @var $rsp \App\Entity\Appraisal\AppraisalResponse */
+		if (!$rsp) {
+			throw new \RuntimeException("Unable to locate responses.");
+		}
+		$rspJson = $rsp->getJsonData() ?? [];
+		$ptr = &$rspJson;
+		// Field name of form is prefix[depth_1][depth_2][depth_3]
+		// Explode the field name using regex
+		if (preg_match_all("/\[([\w\d_\-]+)\]/", $fieldName, $delimited)) {
+			// Capture group is stored in [1]
+			$captureGrp = $delimited[1];
+			for ($i = 0; $i < count($captureGrp); $i++) {
+				// If is last element
+				if ($i == count($captureGrp) - 1) {
+					unset($ptr[$captureGrp[$i]]);
+				} else {
+					// Walk 1 level deeper
+					$ptr = &$ptr[$captureGrp[$i]];
+				}
+			}
+		}
+		$rsp->setJsonData(array_replace_recursive($rspJson, $rspJson));
 	}
 
 

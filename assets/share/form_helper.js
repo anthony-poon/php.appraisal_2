@@ -7,7 +7,7 @@ function bindDOMElement() {
         let container = $(evt.target).data("collection-container");
         let index = $(evt.target).data("index");
         if (!index) {
-            index = $(container).children().length;
+            index = 0
         }
         index = index + 1;
         prototype = prototype.replace(/__name__/g, index);

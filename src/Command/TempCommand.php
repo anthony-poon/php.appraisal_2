@@ -32,39 +32,24 @@ class TempCommand extends Command {
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$repo = $this->em->getRepository(AppVersion1::class);
-		$this->em->beginTransaction();
-		$user1 = new User();
-		$user1->setUsername("abcd");
-		$user1->setFullName("abcd");
-		$user1->setPassword("nan");
-		$user1->setEmail("asdf");
-		$user2 = new User();
-		$user2->setUsername("abcdd");
-		$user2->setFullName("abcd");
-		$user2->setPassword("nan");
-		$user2->setEmail("asdfs");
-		$this->em->persist($user1);
-		$this->em->persist($user2);
-		$this->em->flush();
-		$id = $user2->getId();
-		var_dump($id);
-		$app = new AppVersion1();
-		$app->setJsonData([]);
-		$app->setOwner($user1);
-		$this->em->persist($app);
-		$this->em->flush();
-		$response = new AppraisalResponse();
-		$response->setOwner($user2);
-		$response->setJsonData(["OK"]);
-		$response->setAppraisal($app);
-		$response->setResponseType("TESTING");
-		$this->em->persist($response);
-		$this->em->flush();
-		$app = $repo->findOneBy(["owner" => $user1->getId()]);
-
-		var_dump($app);
-		$this->em->rollback();
+		$str = "aaseasdf[grp_1][grp2][grp3]";
+		$rtn = [];
+		$ptr = &$rtn;
+		if (preg_match_all("/\[([\w\d_\-]+)\]/", $str, $delimited)) {
+			// Capture group is stored in [1]
+			$captureGrp = $delimited[1];
+			for ($i = 0; $i < count($captureGrp); $i++) {
+				// If is last element
+				if ($i == count($captureGrp) - 1) {
+					$ptr[$captureGrp[$i]] = "abc";
+				} else {
+					$ptr[$captureGrp[$i]] = [];
+				}
+				// Walk 1 level deeper
+				$ptr = &$ptr[$captureGrp[$i]];
+			}
+		}
+		var_dump($rtn);
 	}
 
 

@@ -45,12 +45,16 @@ abstract class AppraisalAbstract {
 
 	/**
 	 * @var Collection
-	 * @ORM\OneToMany(targetEntity="AppraisalResponse", mappedBy="appraisal", indexBy="owner_id")
+	 * @ORM\OneToMany(targetEntity="AppraisalResponse",
+	 *     mappedBy="appraisal",
+	 *     indexBy="owner_id",
+	 *     cascade={"persist", "remove"}
+	 *	 )
 	 */
     private $responses;
 
 	/**
-	 * @var array
+	 * @var string
 	 * @ORM\Column(type="json", nullable=true)
 	 */
 	private $jsonData;
@@ -154,7 +158,11 @@ abstract class AppraisalAbstract {
 	 */
 	abstract function getTemplate(): string;
 
-	abstract function getRenderData(): array;
+	abstract function read(): array;
 
-	abstract function initiate();
+	abstract function create();
+
+	abstract function update(User $user, string $role, string $fieldName, $value);
+
+	abstract function delete(User $user, string $role, string $fieldName);
 }
