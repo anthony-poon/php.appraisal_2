@@ -10,6 +10,7 @@ namespace App\FormType\Form\Appraisal\Version1;
 
 use App\FormType\Component\CompositeCollectionType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -26,13 +27,28 @@ class FormMainType extends AbstractType {
 			->add("survey_commencement_date", TextType::class)
 			->add("part_a", CompositeCollectionType::class, [
 				"entry_type" => PartAType::class,
-				"label" => false
+				"label" => false,
+				"force_serial_index" => true
 			])
 			->add("part_a_overall_score", TextType::class)
 			->add("countersigner_1_name", TextType::class)
 			->add("countersigner_2_name", TextType::class)
 			->add("countersigner_1_part_a_score", TextType::class)
 			->add("countersigner_2_part_a_score", TextType::class)
+			->add("part_b1", CollectionType::class, [
+				"entry_type" => PartBType::class,
+				"label" => false,
+				"entry_options" => [
+					"lhs_text" => [
+						"a",
+						"b",
+						"c",
+						"d",
+						"e"
+					],
+				],
+
+			])
 			->add("part_a_total", TextType::class)
 			;
 	}

@@ -96,7 +96,7 @@ class AppraisalController extends Controller {
 		]);
 		$form = $this->createForm(FormMainType::class);
 		$form->setData($app->read());
-		var_dump($form->get("part_a"));
+		var_dump($app->read());
 		return $this->render("render/appraisal/view_appraisal.html.twig", [
 			"form" => $form->createView(),
 		]);
