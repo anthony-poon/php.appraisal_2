@@ -137,7 +137,7 @@ class User extends DirectoryObject implements UserInterface, \Serializable {
 
 	/**
 	 * @var \DateTimeInterface
-	 * @ORM\Column(type="date")
+	 * @ORM\Column(type="date", nullable=true)
 	 */
 	private $commenceDate;
 

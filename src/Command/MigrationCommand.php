@@ -108,6 +108,9 @@ class MigrationCommand extends Command {
 			$user->setPassword($this->encoder->encodePassword($user, "password"));
 			$user->setIsSenior((bool) $r["is_senior"]);
 			$user->setPosition($r["user_position"]);
+			if ($r["commence_date"]) {
+				$user->setCommenceDate(\DateTimeImmutable::createFromFormat("Y-m-d", $r["commence_date"]));
+			}
 			/* @var \App\Entity\Department $dept */
 			if ((bool) $r["is_admin"] && !in_array("ROLE_ADMIN", $user->getRoles())) {
 				$adminGp->getChildren()->add($user);

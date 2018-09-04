@@ -13,11 +13,13 @@ $(document).ready(function(){
         let parsed = transformer.ajaxToFieldName("appraisal", data);
         console.log(parsed);
         let initContainer = function(el, count) {
-            let prototype = $(el).find("[data-collection-prototype]").data("collection-prototype");
-            let container = $(el).find("[data-collection-container]").data("collection-container");
+            let btn = $(el).find("[data-collection-prototype]");
+            let prototype = $(btn).data("collection-prototype");
+            let container = $(btn).data("collection-container");
             for (let i = 0; i < count; i ++) {
                 $(container).append(prototype.replace(/__name__/g, i));
             }
+            $(btn).data("index", count);
         };
         initContainer("#part-a-wrapper", _.size(parsed["appraisal[part_a]"]));
         initContainer("#part-d-wrapper", _.size(parsed["appraisal[part_d]"]));
