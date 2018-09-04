@@ -11,6 +11,7 @@ namespace App\Controller;
 
 use App\Entity\Appraisal\AppraisalAbstract;
 use App\Entity\Appraisal\AppraisalPeriod;
+use App\FormType\Form\Appraisal\Version1\FormMainType;
 use App\FormType\SurveyForm\Type1;
 use App\Service\BaseTemplateHelper;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -93,7 +94,12 @@ class AppraisalController extends Controller {
 			"readOnly" => $app->isLocked() || !$isEditing,
 			"testing" => "''"
 		]);
-		return $this->render($app->getTemplate());
+		$form = $this->createForm(FormMainType::class);
+		$form->setData($app->read());
+		var_dump($form->get("part_a"));
+		return $this->render("render/appraisal/view_appraisal.html.twig", [
+			"form" => $form->createView(),
+		]);
 	}
 
 	/**

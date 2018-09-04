@@ -6,7 +6,9 @@
     <div id="{{ form.vars.id }}-container" >
         {% for child in form %}
             <div data-index="{{ child.vars.name }}" class="d-flex align-items-center form-group">
-                {{ form_widget(child) }}
+                <div class="flex-grow-1">
+                    {{ form_widget(child) }}
+                </div>
                 <i class="material-icons text-danger btn-like p-1 ml-2" data-collection-remove>clear</i>
             </div>
             {% if max_index < child.vars.name %}
@@ -15,8 +17,8 @@
         {% endfor %}
     </div>
     {% set prototype = "
-        <div class='d-flex align-items-center form-group'>
-            " ~ form_widget(form.vars.prototype) ~ "
+        <div data-index class='d-flex align-items-center form-group'>
+            <div class='flex-grow-1'>" ~ form_widget(form.vars.prototype) ~ "</div>
             <i class='material-icons text-danger btn-like p-1 ml-2' data-collection-remove>clear</i>
         </div>"
     %}
@@ -26,4 +28,12 @@
         </div>
     </div>
     {% endspaceless %}
+{% endblock %}
+
+{% block version_1_main_widget %}
+    {{ include("component/appraisal_template/version_1.html.twig") }}
+{% endblock %}
+
+{% block version_1_a_widget %}
+    {{ include("component/appraisal_template/version_1_a.html.twig") }}
 {% endblock %}
