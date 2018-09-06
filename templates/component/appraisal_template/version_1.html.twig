@@ -1,4 +1,4 @@
-<form id="appraisal" method="POST" action="#">
+{{ form_start(form) }}
     <div class="row">
         <div class="col">
             <h5 class="title">
@@ -36,10 +36,7 @@
             {{ form_row(form.survey_commencement_date) }}
         </div>
         <div class="col">
-            <div class="form-group">
-                <label>Type of Appraisal</label>
-                <input type="text" class="form-control form-control-sm"/>
-            </div>
+            {{ form_row(form.appraisal_type) }}
         </div>
     </div>
     <div class="row">
@@ -82,7 +79,11 @@
 
     </div>
     <div id="part-a-wrapper">
-        {{ form_row(form.part_a) }}
+        <div class="row">
+            <div class="col">
+                {{ form_row(form.part_a) }}
+            </div>
+        </div>
         <div class="row mb-3">
             <div class="col-3 offset-9 form-group">
                 {{ form_row(form.part_a_overall_score) }}
@@ -132,211 +133,40 @@
             </div>
         </div>
 
-        <div id="part-b1-wrapper">
-            {{ form_row(form.part_b1) }}
-        </div>
-
-        <div class="row mb-5">
-            <div class="col-7 form-group">
-                <label>Overall Comments</label>
-                <textarea class="form-control" name="appraisal[part_b1_overall_comment]"></textarea>
-            </div>
-            <div class="col-3 offset-2 form-group">
-                <label>Part B1 Subtotal</label>
-                <input type="number" mix="1" max="5" class="form-control" name="appraisal[part_b1_overall_score]"/>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col title">
-                Part B2: This section is applicable to Senior Executive employee (Deputy General Manager level and above)
-            </div>
-        </div>
-
-        <div class="row" id="part-b2-wrapper">
+        <div id="part-b1-wrapper" class="row">
             <div class="col">
-                <div class="row mb-5">
-                    <div class="col">
-                        <p>Influence, Negotiation and Persuasion</p>
-                        <div class="row">
-                            <div class="col-5 lhs">
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>5. Effective influencer and persuader at all levels, able to get most ideas accepted in diverse groups at most levels of seniority.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>4. Inspires confidence, has credibility with colleagues and customers and is able to get complex ideas accepted. It is generally able to persuade from a basis of openness and clarity.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>3. Make a positive impact, is clear, concise, articulate and assertive when providing information and considered logical and reasoned in presenting own case. Able to compromise with customers (or other stakeholder) by convincing them of one's ideas and thoughts from various point of view.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>2. Has no involvement in making oral or written presentations or in getting ideas or views across to others. Not able to find acceptable solution for all the parties from mid/long term prospective instead of insisting on one's idea.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>1. Colleagues and/or customers pay little attention to debate, proffered solutions or written work. Contributions within team or at meetings are generally not listened to.</small>
-                                </div>
-                            </div>
-                            <div class="col-7">
-                                <div class="row h-100">
-                                    <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                        <div class="border-bottom mb-2 pb-2">
-                                            Self Assessment
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Score</label>
-                                            <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_0][self_score]"/>
-                                        </div>
-
-                                        <div class="d-flex h-100 flex-column">
-                                            <label>Example</label>
-                                            <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_0][self_example]"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                        <div class="border-bottom mb-2 pb-2">
-                                            Assessment by Appraising Officer
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Score</label>
-                                            <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_0][appraiser_score]"/>
-                                        </div>
-
-                                        <div class="d-flex h-100 flex-column">
-                                            <label>Example</label>
-                                            <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_0][appraiser_example]"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-5">
-                    <div class="col">
-                        <p>Coaching and Developing</p>
-                        <div class="row">
-                            <div class="col-5 lhs">
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>5. Takes time to coach and develop people for improved performance; Pro-active in idenitifying and developing high calibrae knowledge, and planning for enhancement of managerial qualities in self and others.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>4. Provides regular feedback on performance, suggests improvements, listens and empathises with others, and gets people to commit to responsibilties and try new techniques; Pro-active in sharing knowledge, leading, training, supporting and motivating people to achieve results and improve their works.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>3. Translates performance targets into clear objectives. Generally coaches and supports others on low level daily issues.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>2. Is not involved in coaching and developing others.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>1. Hinders the development of others and generally provides no or negative feedback. Unwilling to devote time to development of others.</small>
-                                </div>
-                            </div>
-                            <div class="col-7">
-                                <div class="row h-100">
-                                    <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                        <div class="border-bottom mb-2 pb-2">
-                                            Self Assessment
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Score</label>
-                                            <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_1][self_score]"/>
-                                        </div>
-
-                                        <div class="d-flex h-100 flex-column form-group">
-                                            <label>Example</label>
-                                            <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_1][self_example]"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                        <div class="border-bottom mb-2 pb-2">
-                                            Assessment by Appraising Officer
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Score</label>
-                                            <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_1][appraiser_score]"/>
-                                        </div>
-
-                                        <div class="d-flex h-100 flex-column form-group">
-                                            <label>Example</label>
-                                            <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_1][appraiser_example]"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-5">
-                    <div class="col">
-                        <p>Leadership and Strategic Thinking</p>
-                        <div class="row">
-                            <div class="col-5 lhs">
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>5. Become a role model in upholding the Company philosophy. Has a record of leading teams achieving results in difficult situations and creates a climate where employees are highly motivated to achieve goals.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>4. Become a role model in upholding the Company philosophy. Has a record of clear motivational leadership, recognition of other's achievements and development of visions, targets and techniques which have kept teams and/or individuals focused on the goals. Has introduced and managed change invitiatives in own team effectively.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>3. Able to set a good example in terms of diligency, integrity and ethically. Has record of achieving results through others when asked, or opportunities arise. Has explained to subordinates the Company values, goal and team quality objectives for their understanding and support.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>2. Failed to set any good example in terms of diligency, integrity and ethically. Has not had the opportunity to demonstrate leadership qualities or shared the quality objectives with subordinates.</small>
-                                </div>
-                                <div class="pb-1 mb-1 border-bottom">
-                                    <small>1. Set many bad examples in terms of diligency, integrity and ethically. Unable to lead teams, does not provide direct and lowers morale.</small>
-                                </div>
-                            </div>
-                            <div class="col-7">
-                                <div class="row h-100">
-                                    <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                        <div class="border-bottom mb-2 pb-2">
-                                            Self Assessment
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Score</label>
-                                            <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_2][self_score]"/>
-                                        </div>
-
-                                        <div class="d-flex h-100 flex-column">
-                                            <label>Example</label>
-                                            <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_2][self_example]"></textarea>
-                                        </div>
-                                    </div>
-                                    <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                        <div class="border-bottom mb-2 pb-2">
-                                            Assessment by Appraising Officer
-                                        </div>
-                                        <div class="form-group">
-                                            <label>Score</label>
-                                            <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b2][q_2][appraiser_score]"/>
-                                        </div>
-
-                                        <div class="d-flex h-100 flex-column">
-                                            <label>Example</label>
-                                            <textarea class="form-control flex-grow-1" name="appraisal[part_b2][q_2][appraiser_example]"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                {{ form_row(form.part_b1) }}
             </div>
         </div>
 
         <div class="row mb-5">
             <div class="col-7 form-group">
-                <label>Overall Comments</label>
-                <textarea class="form-control" name="appraisal[part_b2_overall_comment]"></textarea>
+                {{ form_row(form.part_b1_overall_comment) }}
             </div>
             <div class="col-3 offset-2 form-group">
-                <label>Part B2 Subtotal</label>
-                <input type="number" mix="1" max="5" class="form-control" name="appraisal[part_b2_overall_score]"/>
+                {{ form_row(form.part_b1_overall_score) }}
             </div>
         </div>
+        {% if form.part_b2 is defined %}
+            <div class="row">
+                <div class="col title">
+                    Part B2: This section is applicable to Senior Executive employee (Deputy General Manager level and above)
+                </div>
+            </div>
+            <div id="part-b2-wrapper" class="row">
+                <div class="col">
+                    {{ form_row(form.part_b2) }}
+                </div>
+            </div>
+            <div class="row mb-5">
+                <div class="col-7 form-group">
+                    {{ form_row(form.part_b2_overall_comment) }}
+                </div>
+                <div class="col-3 offset-2 form-group">
+                    {{ form_row(form.part_b2_overall_score) }}
+                </div>
+            </div>
+        {% endif %}
 
         <div class="row mb-5">
             <div class="col-8 offset-2">
@@ -349,28 +179,18 @@
                             <label>
                                 <small>Name</small>
                             </label>
-                            <input readonly type="text" class="form-control-plaintext form-control-sm" name="appraisal[countersigner_1_name]">
+                            <input readonly type="text" class="form-control-plaintext form-control-sm" value="{{ countersigner_1_name }}">
                         </div>
-                        <div class="form-group">
-                            <label>
-                                <small>Score</small>
-                            </label>
-                            <input type="number" class="form-control form-control-sm" name="appraisal[countersigner_1_part_b_score]"/>
-                        </div>
+                        {{ form_row(form.countersigner_1_part_b_score) }}
                     </div>
                     <div class="col">
                         <div class="form-group">
                             <label>
                                 <small>Name</small>
                             </label>
-                            <input readonly type="text" class="form-control-plaintext form-control-sm" name="appraisal[countersigner_2_name]">
+                            <input readonly type="text" class="form-control-plaintext form-control-sm" value="{{ countersigner_2_name }}">
                         </div>
-                        <div class="form-group">
-                            <label>
-                                <small>Score</small>
-                            </label>
-                            <input type="number" class="form-control form-control-sm" name="appraisal[countersigner_2_part_b_score]"/>
-                        </div>
+                        {{ form_row(form.countersigner_2_part_b_score) }}
                     </div>
                 </div>
             </div>
@@ -378,14 +198,22 @@
 
         <div class="row">
             <div class="col-3 offset-9 form-group">
-                <label>
-                    Part B Total
-                </label>
-                <input class="form-control form-control-sm text-right" type="number" name="appraisal[part_b_total]"/>
+                {{ form_row(form.part_b_total) }}
             </div>
         </div>
     </div>
-
+    <div class="row mt-3">
+        <div class="col">
+            <h5 class="title">
+                Overall Performance Rating
+            </h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3 offset-9 form-group">
+            {{ form_row(form.part_a_b_total) }}
+        </div>
+    </div>
     <div id="part-c-wrapper">
         <div class="row mt-3">
             <div class="col">
@@ -412,16 +240,16 @@
                     </div>
                     <div class="col">
                         <div class="d-flex align-items-center">
-                            <span class="mr-3">1. </span>
-                            <input type="text" class="form-control" name="appraisal[prof_competency_1]">
+                            <span class="mr-3">{{ form_label(form.prof_competency_1) }}</span>
+                            {{ form_widget(form.prof_competency_1) }}
                         </div>
                         <div class="d-flex align-items-center">
-                            <span class="mr-3">2. </span>
-                            <input type="text" class="form-control" name="appraisal[prof_competency_2]">
+                            <span class="mr-3">{{ form_label(form.prof_competency_2) }}</span>
+                            {{ form_widget(form.prof_competency_2) }}
                         </div>
                         <div class="d-flex align-items-center">
-                            <span class="mr-3">3. </span>
-                            <input type="text" class="form-control" name="appraisal[prof_competency_3]">
+                            <span class="mr-3">{{ form_label(form.prof_competency_3) }}</span>
+                            {{ form_widget(form.prof_competency_3) }}
                         </div>
                     </div>
                 </div>
@@ -437,58 +265,16 @@
                     </div>
                     <div class="col">
                         <div class="d-flex align-items-center">
-                            <span class="mr-3">1. </span>
-                            <select class="form-control" name="appraisal[core_competency_1]">
-                                <option value="" selected disabled hidden>Please select</option>
-                                <option value="Teamwork and Support">Teamwork and Support</option>
-                                <option value="Ownership">Ownership</option>
-                                <option value="Customer Focus">Customer Focus</option>
-                                <option value="Initiative">Initiative</option>
-                                <option value="Attention to Detail">Attention to Detail</option>
-                                <option value="Problem Solving and Decision Making">Problem Solving and Decision Making</option>
-                                <option value="Achieving Results and Compliance">Achieving Results and Compliance</option>
-                                <option value="Communication and Interpersonal">Communication and Interpersonal</option>
-                                <option value="Influence, Negotiation and Persuasion">Influence, Negotiation and Persuasion</option>
-                                <option value="Coaching and Developing">Coaching and Developing</option>
-                                <option value="Leadership and Strategic Thinking">Leadership and Strategic Thinking</option>
-                                <option value="Nil">Nil</option>
-                            </select>
+                            <span class="mr-3">{{ form_label(form.core_competency_1) }}</span>
+                            {{ form_widget(form.core_competency_1) }}
                         </div>
                         <div class="d-flex align-items-center">
-                            <span class="mr-3">2. </span>
-                            <select class="form-control" name="appraisal[core_competency_2]">
-                                <option value="" selected disabled hidden>Please select</option>
-                                <option value="Teamwork and Support">Teamwork and Support</option>
-                                <option value="Ownership">Ownership</option>
-                                <option value="Customer Focus">Customer Focus</option>
-                                <option value="Initiative">Initiative</option>
-                                <option value="Attention to Detail">Attention to Detail</option>
-                                <option value="Problem Solving and Decision Making">Problem Solving and Decision Making</option>
-                                <option value="Achieving Results and Compliance">Achieving Results and Compliance</option>
-                                <option value="Communication and Interpersonal">Communication and Interpersonal</option>
-                                <option value="Influence, Negotiation and Persuasion">Influence, Negotiation and Persuasion</option>
-                                <option value="Coaching and Developing">Coaching and Developing</option>
-                                <option value="Leadership and Strategic Thinking">Leadership and Strategic Thinking</option>
-                                <option value="Nil">Nil</option>
-                            </select>
+                            <span class="mr-3">{{ form_label(form.core_competency_2) }}</span>
+                            {{ form_widget(form.core_competency_2) }}
                         </div>
                         <div class="d-flex align-items-center">
-                            <span class="mr-3">3. </span>
-                            <select class="form-control" name="appraisal[core_competency_3]">
-                                <option value="" selected disabled hidden>Please select</option>
-                                <option value="Teamwork and Support">Teamwork and Support</option>
-                                <option value="Ownership">Ownership</option>
-                                <option value="Customer Focus">Customer Focus</option>
-                                <option value="Initiative">Initiative</option>
-                                <option value="Attention to Detail">Attention to Detail</option>
-                                <option value="Problem Solving and Decision Making">Problem Solving and Decision Making</option>
-                                <option value="Achieving Results and Compliance">Achieving Results and Compliance</option>
-                                <option value="Communication and Interpersonal">Communication and Interpersonal</option>
-                                <option value="Influence, Negotiation and Persuasion">Influence, Negotiation and Persuasion</option>
-                                <option value="Coaching and Developing">Coaching and Developing</option>
-                                <option value="Leadership and Strategic Thinking">Leadership and Strategic Thinking</option>
-                                <option value="Nil">Nil</option>
-                            </select>
+                            <span class="mr-3">{{ form_label(form.core_competency_3) }}</span>
+                            {{ form_widget(form.core_competency_3) }}
                         </div>
                     </div>
                 </div>
@@ -504,16 +290,16 @@
                     </div>
                     <div class="col">
                         <div class="d-flex align-items-center">
-                            <div class="mr-3">0 - 1 year:</div>
-                            <input type="text" class="form-control" name="appraisal[on_job_0_to_1_year]">
+                            <span class="mr-3">{{ form_label(form.on_job_0_to_1_year) }}</span>
+                            {{ form_widget(form.on_job_0_to_1_year) }}
                         </div>
                         <div class="d-flex align-items-center">
-                            <div class="mr-3">1 - 2 year:</div>
-                            <input type="text" class="form-control" name="appraisal[on_job_1_to_2_year]">
+                            <span class="mr-3">{{ form_label(form.on_job_1_to_2_year) }}</span>
+                            {{ form_widget(form.on_job_1_to_2_year) }}
                         </div>
                         <div class="d-flex align-items-center">
-                            <div class="mr-3">2 - 3 year:</div>
-                            <input type="text" class="form-control" name="appraisal[on_job_2_to_3_year]">
+                            <span class="mr-3">{{ form_label(form.on_job_2_to_3_year) }}</span>
+                            {{ form_widget(form.on_job_2_to_3_year) }}
                         </div>
                     </div>
                 </div>
@@ -522,72 +308,18 @@
                     <div class="col-3">
                         Functional Training Needs (Job Related)
                     </div>
-                    <div class="col form-group">
+                    <div class="col">
                         <div class="d-flex align-items-center">
-                            <div class="mr-3">0 - 1 year:</div>
-                            <select class="form-control" name="appraisal[function_training_0_to_1_year]">
-                                <option selected disabled hidden>Please select</option>
-                                <option value="Business Contract Law Knowledge for Non Legal Practitioner">Business Contract Law Knowledge for Non Legal Practitioner</option>
-                                <option value="Business Law & Practices">Business Law & Practices</option>
-                                <option value="Business Operations Knowledge (Acquisition of companies or forming strategic alliance)">Business Operations Knowledge (Acquisition of companies or forming strategic alliance)</option>
-                                <option value="Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)">Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)</option>
-                                <option value="Business Operations Knowledge (Logistics and Related Legal Requirements)">Business Operations Knowledge (Logistics and Related Legal Requirements)</option>
-                                <option value="Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)">Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)</option>
-                                <option value="Business Operations Knowledge (Sales, Marketing and Operations)">Business Operations Knowledge (Sales, Marketing and Operations)</option>
-                                <option value="Data Protection knowledge in Human Resources Management">Data Protection knowledge in Human Resources Management</option>
-                                <option value="Data Protection knowledge in Internal IT Management">Data Protection knowledge in Internal IT Management</option>
-                                <option value="Finance Knowledge for Non-Finance People (General)">Finance Knowledge for Non-Finance People (General)</option>
-                                <option value="Legal Knowledge on Data Protection">Legal Knowledge on Data Protection</option>
-                                <option value="Marketing Knowledge (Manganese Market & Product Knowledge)">Marketing Knowledge (Manganese Market & Product Knowledge)</option>
-                                <option value="Project Management Skills: The Fundamentals and Process">Project Management Skills: The Fundamentals and Process</option>
-                                <option value="Stakeholder Relationship Skills for Project Managers">Stakeholder Relationship Skills for Project Managers</option>
-                                <option value="Others, please specify">Others, please specify</option>
-                                <option value="Nil">Nil</option>
-                            </select>
+                            <span class="mr-3">{{ form_label(form.function_training_0_to_1_year) }}</span>
+                            {{ form_widget(form.function_training_0_to_1_year) }}
                         </div>
                         <div class="d-flex align-items-center">
-                            <div class="mr-3">1 - 2 year:</div>
-                            <select class="form-control" name="appraisal[function_training_1_to_2_year]">
-                                <option selected disabled hidden>Please select</option>
-                                <option value="Business Contract Law Knowledge for Non Legal Practitioner">Business Contract Law Knowledge for Non Legal Practitioner</option>
-                                <option value="Business Law & Practices">Business Law & Practices</option>
-                                <option value="Business Operations Knowledge (Acquisition of companies or forming strategic alliance)">Business Operations Knowledge (Acquisition of companies or forming strategic alliance)</option>
-                                <option value="Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)">Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)</option>
-                                <option value="Business Operations Knowledge (Logistics and Related Legal Requirements)">Business Operations Knowledge (Logistics and Related Legal Requirements)</option>
-                                <option value="Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)">Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)</option>
-                                <option value="Business Operations Knowledge (Sales, Marketing and Operations)">Business Operations Knowledge (Sales, Marketing and Operations)</option>
-                                <option value="Data Protection knowledge in Human Resources Management">Data Protection knowledge in Human Resources Management</option>
-                                <option value="Data Protection knowledge in Internal IT Management">Data Protection knowledge in Internal IT Management</option>
-                                <option value="Finance Knowledge for Non-Finance People (General)">Finance Knowledge for Non-Finance People (General)</option>
-                                <option value="Legal Knowledge on Data Protection">Legal Knowledge on Data Protection</option>
-                                <option value="Marketing Knowledge (Manganese Market & Product Knowledge)">Marketing Knowledge (Manganese Market & Product Knowledge)</option>
-                                <option value="Project Management Skills: The Fundamentals and Process">Project Management Skills: The Fundamentals and Process</option>
-                                <option value="Stakeholder Relationship Skills for Project Managers">Stakeholder Relationship Skills for Project Managers</option>
-                                <option value="Others, please specify">Others, please specify</option>
-                                <option value="Nil">Nil</option>
-                            </select>
+                            <span class="mr-3">{{ form_label(form.function_training_1_to_2_year) }}</span>
+                            {{ form_widget(form.function_training_1_to_2_year) }}
                         </div>
                         <div class="d-flex align-items-center">
-                            <div class="mr-3">2 - 3 year:</div>
-                            <select class="form-control" name="appraisal[function_training_2_to_3_year]">
-                                <option selected disabled hidden>Please select</option>
-                                <option value="Business Contract Law Knowledge for Non Legal Practitioner">Business Contract Law Knowledge for Non Legal Practitioner</option>
-                                <option value="Business Law & Practices">Business Law & Practices</option>
-                                <option value="Business Operations Knowledge (Acquisition of companies or forming strategic alliance)">Business Operations Knowledge (Acquisition of companies or forming strategic alliance)</option>
-                                <option value="Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)">Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)</option>
-                                <option value="Business Operations Knowledge (Logistics and Related Legal Requirements)">Business Operations Knowledge (Logistics and Related Legal Requirements)</option>
-                                <option value="Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)">Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)</option>
-                                <option value="Business Operations Knowledge (Sales, Marketing and Operations)">Business Operations Knowledge (Sales, Marketing and Operations)</option>
-                                <option value="Data Protection knowledge in Human Resources Management">Data Protection knowledge in Human Resources Management</option>
-                                <option value="Data Protection knowledge in Internal IT Management">Data Protection knowledge in Internal IT Management</option>
-                                <option value="Finance Knowledge for Non-Finance People (General)">Finance Knowledge for Non-Finance People (General)</option>
-                                <option value="Legal Knowledge on Data Protection">Legal Knowledge on Data Protection</option>
-                                <option value="Marketing Knowledge (Manganese Market & Product Knowledge)">Marketing Knowledge (Manganese Market & Product Knowledge)</option>
-                                <option value="Project Management Skills: The Fundamentals and Process">Project Management Skills: The Fundamentals and Process</option>
-                                <option value="Stakeholder Relationship Skills for Project Managers">Stakeholder Relationship Skills for Project Managers</option>
-                                <option value="Others, please specify">Others, please specify</option>
-                                <option value="Nil">Nil</option>
-                            </select>
+                            <span class="mr-3">{{ form_label(form.function_training_2_to_3_year) }}</span>
+                            {{ form_widget(form.function_training_2_to_3_year) }}
                         </div>
                     </div>
                 </div>
@@ -598,106 +330,16 @@
                     </div>
                     <div class="col">
                         <div class="d-flex align-items-center">
-                            <div class="mr-3">0 - 1 year:</div>
-                            <select class="form-control" name="appraisal[generic_training_0_to_1_year]">
-                                <option value="" selected disabled hidden>Please select</option>
-                                <option value="Team Building and Cross Culture Awareness">Team Building and Cross Culture Awareness</option>
-                                <option value="Change Management Skills">Change Management Skills</option>
-                                <option value="Risk and Crisis Management Skills">Risk and Crisis Management Skills</option>
-                                <option value="Customer Services Skills">Customer Services Skills</option>
-                                <option value="Self Leadership Skills">Self Leadership Skills</option>
-                                <option value="Microsoft Excel 2010/2007 VBA Macro Programming Skills">Microsoft Excel 2010/2007 VBA Macro Programming Skills</option>
-                                <option value="MS Access Fundamentals Skills">MS Access Fundamentals Skills</option>
-                                <option value="MS Access Skills for Expert User">MS Access Skills for Expert User</option>
-                                <option value="MS Excel Fundamentals Skills">MS Excel Fundamentals Skills</option>
-                                <option value="MS Excel Skills for Expert User">MS Excel Skills for Expert User</option>
-                                <option value="MS PowerPoint Skills for Expert User">MS PowerPoint Skills for Expert User</option>
-                                <option value="MS Project Fundamentals Skills">MS Project Fundamentals Skills</option>
-                                <option value="MS Project Skills for Proficient User">MS Project Skills for Proficient User</option>
-                                <option value="MS Word Fundamentals Skills">MS Word Fundamentals Skills</option>
-                                <option value="MS Word Skills Expert User">MS Word Skills Expert User</option>
-                                <option value="Creative Problem Solving and Decision Making Skills">Creative Problem Solving and Decision Making Skills</option>
-                                <option value="Time Management Skills">Time Management Skills</option>
-                                <option value="Elementary Putonghua Skills">Elementary Putonghua Skills</option>
-                                <option value="Phone Manner Skills and Business Etiquette">Phone Manner Skills and Business Etiquette</option>
-                                <option value="Presentation Skills in English">Presentation Skills in English</option>
-                                <option value="Spoken Business English and Social English Skills">Spoken Business English and Social English Skills</option>
-                                <option value="Writing Skills for Business">Writing Skills for Business</option>
-                                <option value="Writing Skills on Clear Actionable Emails">Writing Skills on Clear Actionable Emails</option>
-                                <option value="Negotiation and Persuasion Skills for Business Executives">Negotiation and Persuasion Skills for Business Executives</option>
-                                <option value="Coaching Skills">Coaching Skills</option>
-                                <option value="Leadership Skills For Supervisor">Leadership Skills For Supervisor</option>
-                                <option value="Others, please specify">Others, please specify</option>
-                                <option value="Nil">Nil</option>
-                            </select>
+                            <span class="mr-3">{{ form_label(form.generic_training_0_to_1_year) }}</span>
+                            {{ form_widget(form.generic_training_0_to_1_year) }}
                         </div>
                         <div class="d-flex align-items-center">
-                            <div class="mr-3">1 - 2 year:</div>
-                            <select class="form-control" name="appraisal[generic_training_1_to_2_year]">
-                                <option value="" selected disabled hidden>Please select</option>
-                                <option value="Team Building and Cross Culture Awareness">Team Building and Cross Culture Awareness</option>
-                                <option value="Change Management Skills">Change Management Skills</option>
-                                <option value="Risk and Crisis Management Skills">Risk and Crisis Management Skills</option>
-                                <option value="Customer Services Skills">Customer Services Skills</option>
-                                <option value="Self Leadership Skills">Self Leadership Skills</option>
-                                <option value="Microsoft Excel 2010/2007 VBA Macro Programming Skills">Microsoft Excel 2010/2007 VBA Macro Programming Skills</option>
-                                <option value="MS Access Fundamentals Skills">MS Access Fundamentals Skills</option>
-                                <option value="MS Access Skills for Expert User">MS Access Skills for Expert User</option>
-                                <option value="MS Excel Fundamentals Skills">MS Excel Fundamentals Skills</option>
-                                <option value="MS Excel Skills for Expert User">MS Excel Skills for Expert User</option>
-                                <option value="MS PowerPoint Skills for Expert User">MS PowerPoint Skills for Expert User</option>
-                                <option value="MS Project Fundamentals Skills">MS Project Fundamentals Skills</option>
-                                <option value="MS Project Skills for Proficient User">MS Project Skills for Proficient User</option>
-                                <option value="MS Word Fundamentals Skills">MS Word Fundamentals Skills</option>
-                                <option value="MS Word Skills Expert User">MS Word Skills Expert User</option>
-                                <option value="Creative Problem Solving and Decision Making Skills">Creative Problem Solving and Decision Making Skills</option>
-                                <option value="Time Management Skills">Time Management Skills</option>
-                                <option value="Elementary Putonghua Skills">Elementary Putonghua Skills</option>
-                                <option value="Phone Manner Skills and Business Etiquette">Phone Manner Skills and Business Etiquette</option>
-                                <option value="Presentation Skills in English">Presentation Skills in English</option>
-                                <option value="Spoken Business English and Social English Skills">Spoken Business English and Social English Skills</option>
-                                <option value="Writing Skills for Business">Writing Skills for Business</option>
-                                <option value="Writing Skills on Clear Actionable Emails">Writing Skills on Clear Actionable Emails</option>
-                                <option value="Negotiation and Persuasion Skills for Business Executives">Negotiation and Persuasion Skills for Business Executives</option>
-                                <option value="Coaching Skills">Coaching Skills</option>
-                                <option value="Leadership Skills For Supervisor">Leadership Skills For Supervisor</option>
-                                <option value="Others, please specify">Others, please specify</option>
-                                <option value="Nil">Nil</option>
-                            </select>
+                            <span class="mr-3">{{ form_label(form.generic_training_1_to_2_year) }}</span>
+                            {{ form_widget(form.generic_training_1_to_2_year) }}
                         </div>
                         <div class="d-flex align-items-center">
-                            <div class="mr-3">2 - 3 year:</div>
-                            <select class="form-control" name="appraisal[generic_training_2_to_3_year]">
-                                <option value="" selected disabled hidden>Please select</option>
-                                <option value="Team Building and Cross Culture Awareness">Team Building and Cross Culture Awareness</option>
-                                <option value="Change Management Skills">Change Management Skills</option>
-                                <option value="Risk and Crisis Management Skills">Risk and Crisis Management Skills</option>
-                                <option value="Customer Services Skills">Customer Services Skills</option>
-                                <option value="Self Leadership Skills">Self Leadership Skills</option>
-                                <option value="Microsoft Excel 2010/2007 VBA Macro Programming Skills">Microsoft Excel 2010/2007 VBA Macro Programming Skills</option>
-                                <option value="MS Access Fundamentals Skills">MS Access Fundamentals Skills</option>
-                                <option value="MS Access Skills for Expert User">MS Access Skills for Expert User</option>
-                                <option value="MS Excel Fundamentals Skills">MS Excel Fundamentals Skills</option>
-                                <option value="MS Excel Skills for Expert User">MS Excel Skills for Expert User</option>
-                                <option value="MS PowerPoint Skills for Expert User">MS PowerPoint Skills for Expert User</option>
-                                <option value="MS Project Fundamentals Skills">MS Project Fundamentals Skills</option>
-                                <option value="MS Project Skills for Proficient User">MS Project Skills for Proficient User</option>
-                                <option value="MS Word Fundamentals Skills">MS Word Fundamentals Skills</option>
-                                <option value="MS Word Skills Expert User">MS Word Skills Expert User</option>
-                                <option value="Creative Problem Solving and Decision Making Skills">Creative Problem Solving and Decision Making Skills</option>
-                                <option value="Time Management Skills">Time Management Skills</option>
-                                <option value="Elementary Putonghua Skills">Elementary Putonghua Skills</option>
-                                <option value="Phone Manner Skills and Business Etiquette">Phone Manner Skills and Business Etiquette</option>
-                                <option value="Presentation Skills in English">Presentation Skills in English</option>
-                                <option value="Spoken Business English and Social English Skills">Spoken Business English and Social English Skills</option>
-                                <option value="Writing Skills for Business">Writing Skills for Business</option>
-                                <option value="Writing Skills on Clear Actionable Emails">Writing Skills on Clear Actionable Emails</option>
-                                <option value="Negotiation and Persuasion Skills for Business Executives">Negotiation and Persuasion Skills for Business Executives</option>
-                                <option value="Coaching Skills">Coaching Skills</option>
-                                <option value="Leadership Skills For Supervisor">Leadership Skills For Supervisor</option>
-                                <option value="Others, please specify">Others, please specify</option>
-                                <option value="Nil">Nil</option>
-                            </select>
+                            <span class="mr-3">{{ form_label(form.generic_training_2_to_3_year) }}</span>
+                            {{ form_widget(form.generic_training_2_to_3_year) }}
                         </div>
                     </div>
                 </div>
@@ -723,13 +365,9 @@
                 </p>
             </div>
         </div>
-        <div id="part-d-container">
-
-        </div>
-        {% set attr = include("component/appraisal_template/version_1_d.html.twig") %}
-        <div class="row mt-3 md-3">
-            <div class="col text-center">
-                <i class="material-icons text-primary p-2 btn-like" data-collection-container="#part-d-container" data-collection-prototype="{{ attr|e('html_attr') }}">add</i>
+        <div id="part-d-container" class="row">
+            <div class="col">
+                {{ form_row(form.part_d) }}
             </div>
         </div>
     </div>
@@ -743,10 +381,14 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-10 offset-1 form-group">
-                <label>Please enter your comments</label>
-                <textarea class="form-control" name="appraisal[survey_overall_comment]"></textarea>
+            <div class="col">
+                {{ form_row(form.survey_overall_comment) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                {{ form_row(form.submit) }}
             </div>
         </div>
     </div>
-</form>
+{{ form_end(form) }}

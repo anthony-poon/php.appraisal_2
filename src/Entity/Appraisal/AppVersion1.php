@@ -8,8 +8,10 @@
 
 namespace App\Entity\Appraisal;
 
+use App\Controller\ControllerContext;
 use App\Entity\Appraisal\AppraisalAbstract;
 use App\Entity\Base\User;
+use App\FormType\Form\Appraisal\Version1\FormMainType;
 use Doctrine\ORM\Mapping as ORM;
 /**
  * Class AppVersion1
@@ -24,10 +26,10 @@ class AppVersion1 extends AppraisalAbstract {
 	}
 
 	function getTemplate(): string {
-		return "component/appraisal_template/version_1.html.twig";
+		return FormMainType::class;
 	}
 
-	function read(): array {
+	function read(ControllerContext $context = null): array {
 		$json = $this->getJsonData();
 		$owner = $this->getOwner();
 		/* @var \App\Entity\Appraisal\AppraisalResponse $ownerResponse */
@@ -53,7 +55,7 @@ class AppVersion1 extends AppraisalAbstract {
 		return $json;
 	}
 
-	function create() {
+	function create(ControllerContext $context = null) {
 		$owner = $this->getOwner();
 		$period = $this->getPeriod();
 		$appraisers = $owner->getAppraisers();
@@ -81,7 +83,9 @@ class AppVersion1 extends AppraisalAbstract {
 		]);
 	}
 
-	function update(User $user, string $role, string $fieldName, $value) {
+	function update(ControllerContext $context = null) {
+		$user = $context->getUser();
+		$role = $context->getParam()["role"] ?? "owner";
 		$rsp = $this->getResponses()->filter(function(AppraisalResponse $rsp) use ($user, $role){
 			return ($rsp->getOwner()->getId() === $user->getId()) && ($rsp->getResponseType() === $role);
 		})->first();
@@ -94,28 +98,10 @@ class AppVersion1 extends AppraisalAbstract {
 			$this->getResponses()->add($rsp);
 		}
 		$rspJson = $rsp->getJsonData() ?? [];
-		$rtn = [];
-		$ptr = &$rtn;
-		// Field name of form is prefix[depth_1][depth_2][depth_3]
-		// Explode the field name using regex
-		if (preg_match_all("/\[([\w\d_\-]+)\]/", $fieldName, $delimited)) {
-			// Capture group is stored in [1]
-			$captureGrp = $delimited[1];
-			for ($i = 0; $i < count($captureGrp); $i++) {
-				// If is last element
-				if ($i == count($captureGrp) - 1) {
-					$ptr[$captureGrp[$i]] = $value;
-				} else {
-					$ptr[$captureGrp[$i]] = [];
-					// Walk 1 level deeper
-					$ptr = &$ptr[$captureGrp[$i]];
-				}
-			}
-		}
-		$rsp->setJsonData(array_replace_recursive($rspJson, $rtn));
+		$rsp->setJsonData(array_replace_recursive($rspJson, $context->getData()));
 	}
 
-	function delete(User $user, string $role, string $fieldName) {
+	function delete(ControllerContext $context = null) {
 		// TODO: Implement delete() method.
 		$rsp = $this->getResponses()->filter(function(AppraisalResponse $rsp) use ($user, $role){
 			return ($rsp->getOwner()->getId() === $user->getId()) && ($rsp->getResponseType() === $role);
@@ -144,5 +130,45 @@ class AppVersion1 extends AppraisalAbstract {
 		$rsp->setJsonData(array_replace_recursive($rspJson, $rspJson));
 	}
 
+	/**
+	 * @return User
+	 */
+	public function getAppraiser(): User {
+		return $this->appraiser;
+	}
 
+	/**
+	 * @param User $appraiser
+	 */
+	public function setAppraiser(User $appraiser): void {
+		$this->appraiser = $appraiser;
+	}
+
+	/**
+	 * @return User
+	 */
+	public function getCounter1(): User {
+		return $this->counter1;
+	}
+
+	/**
+	 * @param User $counter1
+	 */
+	public function setCounter1(User $counter1): void {
+		$this->counter1 = $counter1;
+	}
+
+	/**
+	 * @return User
+	 */
+	public function getCounter2(): User {
+		return $this->counter2;
+	}
+
+	/**
+	 * @param User $counter2
+	 */
+	public function setCounter2(User $counter2): void {
+		$this->counter2 = $counter2;
+	}
 }

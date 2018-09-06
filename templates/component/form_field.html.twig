@@ -9,24 +9,28 @@
                 <div class="flex-grow-1">
                     {{ form_widget(child) }}
                 </div>
-                <i class="material-icons text-danger btn-like p-1 ml-2" data-collection-remove>clear</i>
+                {% if not disabled %}
+                    <i class="material-icons text-danger btn-like p-1 ml-2" data-collection-remove>clear</i>
+                {% endif %}
             </div>
             {% if max_index < child.vars.name %}
                 {% set max_index = child.vars.name %}
             {% endif %}
         {% endfor %}
     </div>
-    {% set prototype = "
-        <div data-index class='d-flex align-items-center form-group'>
-            <div class='flex-grow-1'>" ~ form_widget(form.vars.prototype) ~ "</div>
-            <i class='material-icons text-danger btn-like p-1 ml-2' data-collection-remove>clear</i>
-        </div>"
-    %}
-    <div class="row">
-        <div class="col text-center">
-            <i class="material-icons text-primary btn-like p-1" data-index="{{ max_index }}" data-collection-container="#{{ form.vars.id }}-container" data-collection-prototype="{{ prototype|e('html_attr') }}">add</i>
+    {% if not disabled %}
+        {% set prototype = "
+            <div data-index class='d-flex align-items-center form-group'>
+                <div class='flex-grow-1'>" ~ form_widget(form.vars.prototype) ~ "</div>
+                <i class='material-icons text-danger btn-like p-1 ml-2' data-collection-remove>clear</i>
+            </div>"
+        %}
+        <div class="row">
+            <div class="col text-center">
+                <i class="material-icons text-primary btn-like p-1" data-index="{{ max_index }}" data-collection-container="#{{ form.vars.id }}-container" data-collection-prototype="{{ prototype|e('html_attr') }}">add</i>
+            </div>
         </div>
-    </div>
+    {% endif %}
     {% endspaceless %}
 {% endblock %}
 
@@ -38,6 +42,14 @@
     {{ include("component/appraisal_template/version_1_a.html.twig") }}
 {% endblock %}
 
-{% block version_1_b_widget %}
-    {{ include("component/appraisal_template/version_1_b.html.twig") }}
+{% block version_1_b1_widget %}
+    {{ include("component/appraisal_template/version_1_b1.html.twig") }}
+{% endblock %}
+
+{% block version_1_b2_widget %}
+    {{ include("component/appraisal_template/version_1_b2.html.twig") }}
+{% endblock %}
+
+{% block version_1_d_widget %}
+    {{ include("component/appraisal_template/version_1_d.html.twig") }}
 {% endblock %}

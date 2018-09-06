@@ -83,20 +83,25 @@ class AppraisalController extends Controller {
 	 * @Route("/member/appraisal/{id}", name="appraisal_view", requirements={"id"="\d+"})
 	 */
     public function view(int $id, BaseTemplateHelper $helper, Request $request) {
-    	$isEditing = $request->query->get("edit") == true;
 		$appRepo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
 		/* @var \App\Entity\Appraisal\AppraisalAbstract $app */
 		$app = $appRepo->find($id);
-		$helper->addJsParam([
-			"apiPath" => $this->generateUrl("api_appraisal_view", [
+		$user = $this->getUser();
+		$context = new ControllerContext();
+		$context->setUser($user);
+		$context->setParam($request->query->all());
+		var_dump($app->read());
+		$form = $this->createForm(FormMainType::class, $app->read(), [
+			"attr" => [
+				"novalidate" => true
+			],
+			"action" => $this->generateUrl("api_appraisal_view", [
 				"id" => $id
 			]),
-			"readOnly" => $app->isLocked() || !$isEditing,
-			"testing" => "''"
+			"controller_context" => $context,
+			"disabled" => $app->isLocked()
 		]);
-		$form = $this->createForm(FormMainType::class);
-		$form->setData($app->read());
-		var_dump($app->read());
+
 		return $this->render("render/appraisal/view_appraisal.html.twig", [
 			"form" => $form->createView(),
 		]);
@@ -121,7 +126,6 @@ class AppraisalController extends Controller {
 	 * @Method({"POST"})
 	 */
 	public function ajaxPost(int $id, Request $request) {
-		$role = $request->request->get("role") ?? "owner";
 		$appRepo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
 		$app = $appRepo->find($id);
 		$user = $this->getUser();
@@ -129,13 +133,26 @@ class AppraisalController extends Controller {
 		if (empty($app)) {
 			$this->createNotFoundException("Unable to locate appraisal");
 		}
-		$rqJson =  json_decode($request->getContent(), true);
-		foreach ($rqJson as $fieldName => $value) {
-			$app->update($user, $role, $fieldName, $value);
+		$form = $this->createForm($app->getTemplate(), $app->read());
+		$form->handleRequest($request);
+		if ($form->isSubmitted() && $form->isValid()) {
+			$context = new ControllerContext();
+			$context->setUser($user)->setParam($request->query->all());
+			$context->setData($form->getData());
+			$app->update($context);
+			return new JsonResponse($form->getData());
+		} else {
+			foreach ($form->getErrors(true) as $e) {
+				var_dump($e->getOrigin()->createView());
+				var_dump($e->getCause());
+			}
 		}
-		$em = $this->getDoctrine()->getManager();
-		$em->persist($app);
-		$em->flush();
+		//foreach ($rqJson as $fieldName => $value) {
+		//	$app->update($user, $role, $fieldName, $value);
+		//}
+		//$em = $this->getDoctrine()->getManager();
+		//$em->persist($app);
+		//$em->flush();
 		return new JsonResponse([
 			"status" => "success"
 		]);
