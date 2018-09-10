@@ -1,51 +1,28 @@
-<div data-index class="row mb-3">
-    <div class="d-flex col-1 justify-content-center align-items-center">
-        <i class="material-icons text-danger p-1 btn-like" data-collection-remove>clear</i>
-    </div>
-    <div class="col-3 d-flex flex-column">
-        <label>
-            <small>
-                Key Responsibilities or Objectives:
-            </small>
-        </label>
-        <textarea class="form-control flex-grow-1" name="appraisal[part_a][__name__][respon_name]"></textarea>
-    </div>
-    <div class="col-3 d-flex flex-column">
-        <label>
-            <small>
-                Achievements/Results Achieved
-            </small>
-        </label>
-        <textarea class="form-control flex-grow-1" name="appraisal[part_a][__name__][respon_result]"></textarea>
-    </div>
-    <div class="col-4 d-flex flex-column">
-        <label>
-            <small>
-                Comments by Appraising Officer
-            </small>
-        </label>
-        <textarea class="form-control flex-grow-1" name="appraisal[part_a][__name__][respon_comment]"></textarea>
-    </div>
-    <div class="col-1">
-        <div class="row mb-2">
-            <div class="">
-                <label>
-                    <small>
-                        Weight (%)
-                    </small>
-                </label>
-                <input type="number" class="form-control" name="appraisal[part_a][__name__][respon_weight]"/>
-            </div>
+<div class="row">
+    <div class="col-sm-3 d-flex">
+        <div class="form-group d-flex flex-column flex-grow-1">
+            {{ form_label(form.respon_name) }}
+            {{ form_widget(form.respon_name, {"attr": {"class": "flex-grow-1"}}) }}
         </div>
-        <div class="row">
-            <div class="">
-                <label>
-                    <small>
-                        Score
-                    </small>
-                </label>
-                <input type="number" class="form-control" name="appraisal[part_a][__name__][respon_score]"/>
-            </div>
+    </div>
+    <div class="col-sm-3 d-flex">
+        <div class="form-group d-flex flex-column flex-grow-1">
+            {{ form_label(form.respon_result) }}
+            {{ form_widget(form.respon_result, {"attr": {"class": "flex-grow-1"}}) }}
+        </div>
+    </div>
+    <div class="col-sm-4 d-flex">
+        <div class="form-group d-flex flex-column flex-grow-1">
+            {{ form_label(form.respon_comment) }}
+            {{ form_widget(form.respon_comment, {"attr": {"class": "flex-grow-1"}}) }}
+        </div>
+    </div>
+    <div class="col-sm-2">
+        <div>
+            {{ form_row(form.respon_weight) }}
+        </div>
+        <div>
+            {{ form_row(form.respon_score) }}
         </div>
     </div>
 </div>

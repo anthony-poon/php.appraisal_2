@@ -8,6 +8,7 @@
 
 namespace App\Entity\Appraisal;
 
+use App\Controller\ControllerContext;
 use App\Entity\Base\User;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -158,11 +159,11 @@ abstract class AppraisalAbstract {
 	 */
 	abstract function getTemplate(): string;
 
-	abstract function read(): array;
+	abstract function read(ControllerContext $context = null);
 
-	abstract function create();
+	abstract function create(ControllerContext $context = null);
 
-	abstract function update(User $user, string $role, string $fieldName, $value);
+	abstract function update(ControllerContext $context = null);
 
-	abstract function delete(User $user, string $role, string $fieldName);
+	abstract function delete(ControllerContext $context = null);
 }

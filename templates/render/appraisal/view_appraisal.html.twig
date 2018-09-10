@@ -1,0 +1,14 @@
+{% extends 'component/view/base.html.twig' %}
+
+{% block css %}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset("build/appraisal/view.js") }}"></script>
+{% endblock %}
+
+{% block body %}
+    <div id="appraisal-wrapper">
+        {{ form(form) }}
+    </div>
+{% endblock %}

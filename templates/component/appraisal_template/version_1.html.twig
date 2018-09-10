@@ -1,1284 +1,394 @@
-{% extends 'component/view/base.html.twig' %}
-
-{% block css %}
-{% endblock %}
-
-{% block javascripts %}
-    <script src="{{ asset("build/appraisal/view.js") }}"></script>
-{% endblock %}
-
-{% block body %}
-    <div id="appraisal-wrapper">
-        <form id="appraisal" method="POST" action="#">
-            <div class="row">
-                <div class="col">
-                    <h5 class="title">
-                        Employee Information
-                    </h5>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="form-group">
-                        <label for="staff-name">Staff Name</label>
-                        <input type="text" class="form-control form-control-sm" id="staff-name" name="appraisal[staff_name]"/>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label>Department</label>
-                        <input type="text" class="form-control form-control-sm" name="appraisal[staff_department]"/>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label>Position</label>
-                        <input type="text" class="form-control form-control-sm" name="appraisal[staff_position]"/>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="form-group">
-                        <label>Office</label>
-                        <input type="text" class="form-control form-control-sm" name="appraisal[staff_office]"/>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label>Appraising Officer</label>
-                        <input type="text" class="form-control form-control-sm" name="appraisal[appraiser_name]"/>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label>Countersigning Officer</label>
-                        <input type="text" class="form-control form-control-sm" name="appraisal[countersigner_name]"/>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <div class="form-group">
-                        <label>Period of Evaluation</label>
-                        <input type="text" class="form-control form-control-sm" name="appraisal[survey_period]"/>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label>Commencement Date</label>
-                        <input type="text" class="form-control form-control-sm" name="appraisal[survey_commencement_date]"/>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="form-group">
-                        <label>Type of Appraisal</label>
-                        <input type="text" class="form-control form-control-sm"/>
-                    </div>
-                </div>
-            </div>
-            <div class="row">
-                <small class="col mb-3">
-                    Scoring Scheme: Below Deputy General Manager Level - Part A (50%) + Part B (50%); Deputy General Manager Level and above - Part A (50%) + Part B1 (30%) + Part B2 (20%)
-                </small>
-            </div>
-            <div class="row mt-3">
-                <h5 class="col title">
-                    Part A: Accomplishments of Key Responsibilities or Objectives
-                </h5>
-            </div>
-            <div class="row">
-                <small class="col mb-2">
-                    For Employee: please state at least 3 key responsibilities or objectives under the direction of your supervisor, and conduct a self-evaluation on your achievements/results achieved.
-                </small>
-            </div>
-            <div class="row">
-                <small class="col mb-2">
-                    For Appraising Officer: please evaluate the employee's key responsibilities and results achieved, then assign a reasonable score.
-                </small>
-            </div>
-            <div class="row">
-                <small class="col mb-2">
-                    * Weight: Appraising Officer has to judge and give weight of each key responsibility that their subordinates are responsible for in terms of importance. Total weight must be equal to 100%.
-                </small>
-            </div>
-
-            <div class="row mt-3">
-                <div class="offset-1 col-6">
-                    <h6 class="border-bottom pb-2 mb-3">
-                        For Employee
-                    </h6>
-                </div>
-                <div class="col">
-                    <h6 class="border-bottom pb-2 mb-3">
-                        For Appraising Office
-                    </h6>
-                </div>
-
-            </div>
-            <div id="part-a-wrapper">
-                <div id="part-a-container">
-
-                </div>
-                <div class="row mt-3 md-3">
-                    <div class="col text-center">
-                        {% set prototype = include("component/appraisal_template/version_1_a.html.twig") %}
-                        <i class="material-icons text-primary p-2 btn-like" data-collection-container="#part-a-container" data-collection-prototype="{{ prototype|e('html_attr') }}">add</i>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col-3 offset-9 form-group">
-                        <label>
-                            Part A Subtotal
-                        </label>
-                        <input class="form-control form-control-sm text-right" type="number" name="appraisal[part_a_overall_score]"/>
-                    </div>
-                </div>
-
-                <div class="row mb-5">
-                    <div class="col-8 offset-2">
-                        <div class="border-bottom pb-2 mb-2">
-                            Scoring from Countersigning Officer
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>
-                                        <small>Name</small>
-                                    </label>
-                                    <input readonly type="text" class="form-control-plaintext form-control-sm" name="appraisal[countersigner_1_name]">
-                                </div>
-                                <div class="form-group">
-                                    <label>
-                                        <small>Score</small>
-                                    </label>
-                                    <input type="number" class="form-control form-control-sm" name="appraisal[countersigner_1_part_a_score]"/>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>
-                                        <small>Name</small>
-                                    </label>
-                                    <input readonly type="text" class="form-control-plaintext form-control-sm" name="appraisal[countersigner_2_name]">
-                                </div>
-                                <div class="form-group">
-
-                                    <label>
-                                        <small>Score</small>
-                                    </label>
-                                    <input type="number" class="form-control form-control-sm" name="appraisal[countersigner_2_part_a_score]"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-3 offset-9 form-group">
-                        <label>
-                            Part A Total
-                        </label>
-                        <input class="form-control form-control-sm text-right" type="number" name="appraisal[part_a_total]"/>
-                    </div>
-                </div>
-            </div>
-            <div id="part-b-wrapper">
-                <div class="row mt-3">
-                    <div class="col title">
-                        Part B: Competencies Assessment
-                    </div>
-                </div>
-                <div class="row">
-                    <p class="col">
-                        This part should be completed by both the Appraising Officer and the Employee.
-                    </p>
-                </div>
-
-                <div class="row mt-3">
-                    <div class="col title">
-                        Part B1: This section is applicable to all employees
-                    </div>
-                </div>
-
-                <div id="part-b1-wrapper" class="row">
-                    <div class="col">
-                        <div class="row mb-5 mt-2">
-                            <div class="col">
-                                <p>Teamwork and Support</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Fosters team spirit, encourages others to contribute and draws on wide variety of others' skills to achieve team success.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Cooperates with colleagues, willingly shares team values, listens, makes a constructive contribution to teams and builds on team success.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Liaises with colleagues, willingly shares team information and knowledge and makes a constructive contribution to teams. Recognize one's limit and seek for support without delay.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. Did not demonstrate the willingness to work amicably with colleagues or proactively support others in times of need.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Behaves in a disruptive manner within team, is confrontational and negatively criticises others and their contributions. Not considered a team worker.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][0][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column form-group">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][0][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][0][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column form-group">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][0][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Ownership</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>5. Has a record of taking ownership for major problems, crises and issues and ensuring timely and well judged decisions are made and involving others as necessary.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Has a record of taking ownership for customer problems, team goals and challenging objectives and seeks assistance whenever appropriate.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Has a limited record of taking ownership for own decisions and outcomes and does not depend unduly on others, however, knows when to ask for assistance.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. Has not demonstrated ownership.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Ignores potential problems, 'not my problem attitude', blames others for problems rather than helps to resolve problems.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5"  name="appraisal[part_b1][1][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][1][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][1][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][1][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Customer Focus</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Exceeds customers' expectations, develops mutually beneficial relationships with customers.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Has an in-depth understanding of customer needs (gained via experience and research), use this build customer confidence, to develop improvements in customer service levels and relationships.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Has correct understanding of customer needs, received good customer feedback, responding appropriately to customer issues and displays a concern to improve customer service levels.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. Has no record of working with internal or external customers.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Has no observable desire to provide service to others. Past customers have requested that this person does no further work/is removed from site.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5"  name="appraisal[part_b1][2][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][2][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][2][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][2][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Initiative</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Has a record of creating, seizing and driving new ideas and opportunities to implementation.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Anticipates problems and takes per-emptive action to deal with them, has a record of evaluating problems and developing more effective ways of doing things.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Gets on with jobs, does not need asking to do things and generates ideas for helping to resolve issues.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. No evidence of using initiative and seizing opportunities to take action.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Shows no initiative at all, has to be asked to do things and requires supervision and guidance or set procedures to follow.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5"  name="appraisal[part_b1][3][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][3][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][3][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][3][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Attention to Detail</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>5. Consistently high standard with work right first time, sets an example to others and source of advice and guidance.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Shows concern for quality, produces high quality work which is mostly right first time.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Concentrates, checks that work is accurate, make few mistakes and learns from them. Seeks advice/help as appropriate.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. No evidence of concern for quality of the job.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Makes careless and simple mistakes, work in generally sloppy and has to be checked or re-worked, shows no concern for quality standards. Mistakes have impact on service quality.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][4][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][4][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][4][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][4][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Problem Solving and Decision Making</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Has record of developing timely solutions for major problems, looks at wider issues, is creative and uses wide range of tools and sources to develop solutions.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Has record of analysing and developing solutions to complex problems, searches widely for options, aware and proficient in a variety of techniques. Offered new ideas and solutions that are not tied to past method and result in order to increase the value of work.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Has record of handling straight forward problems and developing workable solutions including but not limited to reorganize work unit structure, job assignment or resources. Offered constructive and practical suggestions to tackle work problems.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. No evidence of successful problem solving skills and not willing to handle challenging tasks or accept changes in role or situation.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Is generally unsuccessful in solving problems or takes longer than necessary even with straight forward problems. No concept of whom to ask for support/advice and can handle ordinary routine works only.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][5][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][5][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][5][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][5][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Achieving Results and Compliance</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Has a record of achieving nearly all goals set on schedule, in budget, and anticipating and managing complexities, changing priorities and needs - 80/20%, while the tasks completed are complying the Company goals, quality objectives, policies and procedures.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Has a record of mostly achieving goals agreed or set in budget and generally on schedule - 70/30%, while the tasks completed are complying the Company goals, quality objectives, policies and procedures.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Has a record of generally achieving goals agreed - 60/40%, while the tasks completed are complying the quality objectives, policies and procedures.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. Not able to demonstrate record of achieving results or more than half of tasks completed are not complying the quality objectives, policies and procedures.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Fails to achieve own goals and hinders results of others.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][6][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][6][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][6][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][6][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Communication and Interpersonal</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small >5. Highly articulate, using appropriate language and communication styles at all times, listening and feeding back to show understanding.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Listens and appropriately tailors communication approach to suit situation or person. Engages the enthusiastic cooperation and wholehearted participation of others in work tasks and relationships.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Regularly reports and updates on progress of responsible task, problems and achievements expected by the supervisors. Communicates clearly and concisely, both verbally and written, ensuring information relayed is accurate, listens to what is being communicated and seeks to understand by solid questioning skills.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. No evidence of ability to give and receive information with accuracy, cannot explain one's idea and thoughts for acceptance by others.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Fails to communicate clearly, struggles to put points across verbally or written</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][7][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][7][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][7][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][7][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-5">
-                    <div class="col-7 form-group">
-                        <label>Overall Comments</label>
-                        <textarea class="form-control" name="appraisal[part_b1_overall_comment]"></textarea>
-                    </div>
-                    <div class="col-3 offset-2 form-group">
-                        <label>Part B1 Subtotal</label>
-                        <input type="number" mix="1" max="5" class="form-control" name="appraisal[part_b1_overall_score]"/>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col title">
-                        Part B2: This section is applicable to Senior Executive employee (Deputy General Manager level and above)
-                    </div>
-                </div>
-
-                <div class="row" id="part-b2-wrapper">
-                    <div class="col">
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Influence, Negotiation and Persuasion</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>5. Effective influencer and persuader at all levels, able to get most ideas accepted in diverse groups at most levels of seniority.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Inspires confidence, has credibility with colleagues and customers and is able to get complex ideas accepted. It is generally able to persuade from a basis of openness and clarity.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Make a positive impact, is clear, concise, articulate and assertive when providing information and considered logical and reasoned in presenting own case. Able to compromise with customers (or other stakeholder) by convincing them of one's ideas and thoughts from various point of view.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. Has no involvement in making oral or written presentations or in getting ideas or views across to others. Not able to find acceptable solution for all the parties from mid/long term prospective instead of insisting on one's idea.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Colleagues and/or customers pay little attention to debate, proffered solutions or written work. Contributions within team or at meetings are generally not listened to.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][0][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][0][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][0][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][0][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Coaching and Developing</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>5. Takes time to coach and develop people for improved performance; Pro-active in idenitifying and developing high calibrae knowledge, and planning for enhancement of managerial qualities in self and others.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Provides regular feedback on performance, suggests improvements, listens and empathises with others, and gets people to commit to responsibilties and try new techniques; Pro-active in sharing knowledge, leading, training, supporting and motivating people to achieve results and improve their works.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Translates performance targets into clear objectives. Generally coaches and supports others on low level daily issues.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. Is not involved in coaching and developing others.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Hinders the development of others and generally provides no or negative feedback. Unwilling to devote time to development of others.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][1][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column form-group">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][1][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][1][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column form-group">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][1][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row mb-5">
-                            <div class="col">
-                                <p>Leadership and Strategic Thinking</p>
-                                <div class="row">
-                                    <div class="col-5 lhs">
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>5. Become a role model in upholding the Company philosophy. Has a record of leading teams achieving results in difficult situations and creates a climate where employees are highly motivated to achieve goals.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>4. Become a role model in upholding the Company philosophy. Has a record of clear motivational leadership, recognition of other's achievements and development of visions, targets and techniques which have kept teams and/or individuals focused on the goals. Has introduced and managed change invitiatives in own team effectively.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>3. Able to set a good example in terms of diligency, integrity and ethically. Has record of achieving results through others when asked, or opportunities arise. Has explained to subordinates the Company values, goal and team quality objectives for their understanding and support.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>2. Failed to set any good example in terms of diligency, integrity and ethically. Has not had the opportunity to demonstrate leadership qualities or shared the quality objectives with subordinates.</small>
-                                        </div>
-                                        <div class="pb-1 mb-1 border-bottom">
-                                            <small>1. Set many bad examples in terms of diligency, integrity and ethically. Unable to lead teams, does not provide direct and lowers morale.</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-7">
-                                        <div class="row h-100">
-                                            <div class="ml-3 col lhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Self Assessment
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][2][self_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][2][self_example]"></textarea>
-                                                </div>
-                                            </div>
-                                            <div class="ml-3 col rhs h-100 d-flex flex-column">
-                                                <div class="border-bottom mb-2 pb-2">
-                                                    Assessment by Appraising Officer
-                                                </div>
-                                                <div class="form-group">
-                                                    <label>Score</label>
-                                                    <input type="number" class="form-control form-control-sm" min="1" max="5" name="appraisal[part_b1][2][appraiser_score]"/>
-                                                </div>
-
-                                                <div class="d-flex h-100 flex-column">
-                                                    <label>Example</label>
-                                                    <textarea class="form-control flex-grow-1" name="appraisal[part_b1][2][appraiser_example]"></textarea>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row mb-5">
-                    <div class="col-7 form-group">
-                        <label>Overall Comments</label>
-                        <textarea class="form-control" name="appraisal[part_b2_overall_comment]"></textarea>
-                    </div>
-                    <div class="col-3 offset-2 form-group">
-                        <label>Part B2 Subtotal</label>
-                        <input type="number" mix="1" max="5" class="form-control" name="appraisal[part_b2_overall_score]"/>
-                    </div>
-                </div>
-
-                <div class="row mb-5">
-                    <div class="col-8 offset-2">
-                        <div class="border-bottom pb-2 mb-2">
-                            Scoring from Countersigning Officer
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>
-                                        <small>Name</small>
-                                    </label>
-                                    <input readonly type="text" class="form-control-plaintext form-control-sm" name="appraisal[countersigner_1_name]">
-                                </div>
-                                <div class="form-group">
-                                    <label>
-                                        <small>Score</small>
-                                    </label>
-                                    <input type="number" class="form-control form-control-sm" name="appraisal[countersigner_1_part_b_score]"/>
-                                </div>
-                            </div>
-                            <div class="col">
-                                <div class="form-group">
-                                    <label>
-                                        <small>Name</small>
-                                    </label>
-                                    <input readonly type="text" class="form-control-plaintext form-control-sm" name="appraisal[countersigner_2_name]">
-                                </div>
-                                <div class="form-group">
-                                    <label>
-                                        <small>Score</small>
-                                    </label>
-                                    <input type="number" class="form-control form-control-sm" name="appraisal[countersigner_2_part_b_score]"/>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-3 offset-9 form-group">
-                        <label>
-                            Part B Total
-                        </label>
-                        <input class="form-control form-control-sm text-right" type="number" name="appraisal[part_b_total]"/>
-                    </div>
-                </div>
-            </div>
-
-            <div id="part-c-wrapper">
-                <div class="row mt-3">
-                    <div class="col">
-                        <h5 class="title">
-                            Part C: Learning and Development Plan (To be completed by Appraising Officer and Employee collaboratively)
-                        </h5>
-                    </div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col">
-                        <p>
-                            <small>
-                                For Appraising Officer: please evaluate the strengths and weaknesses of the employee and develop an action plan to improve the employee's work performance in collaboration with him/her.
-                            </small>
-                        </p>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col form-group">
-                        <div class="pb-2 mb-3 border-bottom">Competency Gap Identification</div>
-                        <div class="row">
-                            <div class="col-3">
-                                Professional Competency
-                            </div>
-                            <div class="col">
-                                <div class="d-flex align-items-center">
-                                    <span class="mr-3">1. </span>
-                                    <input type="text" class="form-control" name="appraisal[prof_competency_1]">
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="mr-3">2. </span>
-                                    <input type="text" class="form-control" name="appraisal[prof_competency_2]">
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="mr-3">3. </span>
-                                    <input type="text" class="form-control" name="appraisal[prof_competency_3]">
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col form-group">
-                        <div class="pb-2 mb-3 border-bottom">Competency Gap Identification</div>
-                        <div class="row">
-                            <div class="col-3">
-                                Core Competency
-                            </div>
-                            <div class="col">
-                                <div class="d-flex align-items-center">
-                                    <span class="mr-3">1. </span>
-                                    <select class="form-control" name="appraisal[core_competency_1]">
-                                        <option value="" selected disabled hidden>Please select</option>
-                                        <option value="Teamwork and Support">Teamwork and Support</option>
-                                        <option value="Ownership">Ownership</option>
-                                        <option value="Customer Focus">Customer Focus</option>
-                                        <option value="Initiative">Initiative</option>
-                                        <option value="Attention to Detail">Attention to Detail</option>
-                                        <option value="Problem Solving and Decision Making">Problem Solving and Decision Making</option>
-                                        <option value="Achieving Results and Compliance">Achieving Results and Compliance</option>
-                                        <option value="Communication and Interpersonal">Communication and Interpersonal</option>
-                                        <option value="Influence, Negotiation and Persuasion">Influence, Negotiation and Persuasion</option>
-                                        <option value="Coaching and Developing">Coaching and Developing</option>
-                                        <option value="Leadership and Strategic Thinking">Leadership and Strategic Thinking</option>
-                                        <option value="Nil">Nil</option>
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="mr-3">2. </span>
-                                    <select class="form-control" name="appraisal[core_competency_2]">
-                                        <option value="" selected disabled hidden>Please select</option>
-                                        <option value="Teamwork and Support">Teamwork and Support</option>
-                                        <option value="Ownership">Ownership</option>
-                                        <option value="Customer Focus">Customer Focus</option>
-                                        <option value="Initiative">Initiative</option>
-                                        <option value="Attention to Detail">Attention to Detail</option>
-                                        <option value="Problem Solving and Decision Making">Problem Solving and Decision Making</option>
-                                        <option value="Achieving Results and Compliance">Achieving Results and Compliance</option>
-                                        <option value="Communication and Interpersonal">Communication and Interpersonal</option>
-                                        <option value="Influence, Negotiation and Persuasion">Influence, Negotiation and Persuasion</option>
-                                        <option value="Coaching and Developing">Coaching and Developing</option>
-                                        <option value="Leadership and Strategic Thinking">Leadership and Strategic Thinking</option>
-                                        <option value="Nil">Nil</option>
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <span class="mr-3">3. </span>
-                                    <select class="form-control" name="appraisal[core_competency_3]">
-                                        <option value="" selected disabled hidden>Please select</option>
-                                        <option value="Teamwork and Support">Teamwork and Support</option>
-                                        <option value="Ownership">Ownership</option>
-                                        <option value="Customer Focus">Customer Focus</option>
-                                        <option value="Initiative">Initiative</option>
-                                        <option value="Attention to Detail">Attention to Detail</option>
-                                        <option value="Problem Solving and Decision Making">Problem Solving and Decision Making</option>
-                                        <option value="Achieving Results and Compliance">Achieving Results and Compliance</option>
-                                        <option value="Communication and Interpersonal">Communication and Interpersonal</option>
-                                        <option value="Influence, Negotiation and Persuasion">Influence, Negotiation and Persuasion</option>
-                                        <option value="Coaching and Developing">Coaching and Developing</option>
-                                        <option value="Leadership and Strategic Thinking">Leadership and Strategic Thinking</option>
-                                        <option value="Nil">Nil</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col form-group">
-                        <div class="pb-2 mb-3 border-bottom">Competency Gap Identification</div>
-                        <div class="row">
-                            <div class="col-3">
-                                On the Job Training (Coaching / Mentoring)
-                            </div>
-                            <div class="col">
-                                <div class="d-flex align-items-center">
-                                    <div class="mr-3">0 - 1 year:</div>
-                                    <input type="text" class="form-control" name="appraisal[on_job_0_to_1_year]">
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <div class="mr-3">1 - 2 year:</div>
-                                    <input type="text" class="form-control" name="appraisal[on_job_1_to_2_year]">
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <div class="mr-3">2 - 3 year:</div>
-                                    <input type="text" class="form-control" name="appraisal[on_job_2_to_3_year]">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-3">
-                                Functional Training Needs (Job Related)
-                            </div>
-                            <div class="col form-group">
-                                <div class="d-flex align-items-center">
-                                    <div class="mr-3">0 - 1 year:</div>
-                                    <select class="form-control" name="appraisal[function_training_0_to_1_year]">
-                                        <option selected disabled hidden>Please select</option>
-                                        <option value="Business Contract Law Knowledge for Non Legal Practitioner">Business Contract Law Knowledge for Non Legal Practitioner</option>
-                                        <option value="Business Law & Practices">Business Law & Practices</option>
-                                        <option value="Business Operations Knowledge (Acquisition of companies or forming strategic alliance)">Business Operations Knowledge (Acquisition of companies or forming strategic alliance)</option>
-                                        <option value="Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)">Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)</option>
-                                        <option value="Business Operations Knowledge (Logistics and Related Legal Requirements)">Business Operations Knowledge (Logistics and Related Legal Requirements)</option>
-                                        <option value="Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)">Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)</option>
-                                        <option value="Business Operations Knowledge (Sales, Marketing and Operations)">Business Operations Knowledge (Sales, Marketing and Operations)</option>
-                                        <option value="Data Protection knowledge in Human Resources Management">Data Protection knowledge in Human Resources Management</option>
-                                        <option value="Data Protection knowledge in Internal IT Management">Data Protection knowledge in Internal IT Management</option>
-                                        <option value="Finance Knowledge for Non-Finance People (General)">Finance Knowledge for Non-Finance People (General)</option>
-                                        <option value="Legal Knowledge on Data Protection">Legal Knowledge on Data Protection</option>
-                                        <option value="Marketing Knowledge (Manganese Market & Product Knowledge)">Marketing Knowledge (Manganese Market & Product Knowledge)</option>
-                                        <option value="Project Management Skills: The Fundamentals and Process">Project Management Skills: The Fundamentals and Process</option>
-                                        <option value="Stakeholder Relationship Skills for Project Managers">Stakeholder Relationship Skills for Project Managers</option>
-                                        <option value="Others, please specify">Others, please specify</option>
-                                        <option value="Nil">Nil</option>
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <div class="mr-3">1 - 2 year:</div>
-                                    <select class="form-control" name="appraisal[function_training_1_to_2_year]">
-                                        <option selected disabled hidden>Please select</option>
-                                        <option value="Business Contract Law Knowledge for Non Legal Practitioner">Business Contract Law Knowledge for Non Legal Practitioner</option>
-                                        <option value="Business Law & Practices">Business Law & Practices</option>
-                                        <option value="Business Operations Knowledge (Acquisition of companies or forming strategic alliance)">Business Operations Knowledge (Acquisition of companies or forming strategic alliance)</option>
-                                        <option value="Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)">Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)</option>
-                                        <option value="Business Operations Knowledge (Logistics and Related Legal Requirements)">Business Operations Knowledge (Logistics and Related Legal Requirements)</option>
-                                        <option value="Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)">Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)</option>
-                                        <option value="Business Operations Knowledge (Sales, Marketing and Operations)">Business Operations Knowledge (Sales, Marketing and Operations)</option>
-                                        <option value="Data Protection knowledge in Human Resources Management">Data Protection knowledge in Human Resources Management</option>
-                                        <option value="Data Protection knowledge in Internal IT Management">Data Protection knowledge in Internal IT Management</option>
-                                        <option value="Finance Knowledge for Non-Finance People (General)">Finance Knowledge for Non-Finance People (General)</option>
-                                        <option value="Legal Knowledge on Data Protection">Legal Knowledge on Data Protection</option>
-                                        <option value="Marketing Knowledge (Manganese Market & Product Knowledge)">Marketing Knowledge (Manganese Market & Product Knowledge)</option>
-                                        <option value="Project Management Skills: The Fundamentals and Process">Project Management Skills: The Fundamentals and Process</option>
-                                        <option value="Stakeholder Relationship Skills for Project Managers">Stakeholder Relationship Skills for Project Managers</option>
-                                        <option value="Others, please specify">Others, please specify</option>
-                                        <option value="Nil">Nil</option>
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <div class="mr-3">2 - 3 year:</div>
-                                    <select class="form-control" name="appraisal[function_training_2_to_3_year]">
-                                        <option selected disabled hidden>Please select</option>
-                                        <option value="Business Contract Law Knowledge for Non Legal Practitioner">Business Contract Law Knowledge for Non Legal Practitioner</option>
-                                        <option value="Business Law & Practices">Business Law & Practices</option>
-                                        <option value="Business Operations Knowledge (Acquisition of companies or forming strategic alliance)">Business Operations Knowledge (Acquisition of companies or forming strategic alliance)</option>
-                                        <option value="Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)">Business Operations Knowledge (Geology / Mining Industry / Plant Knowledge)</option>
-                                        <option value="Business Operations Knowledge (Logistics and Related Legal Requirements)">Business Operations Knowledge (Logistics and Related Legal Requirements)</option>
-                                        <option value="Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)">Business Operations Knowledge (Production / Acquisition / Developing Mines and Smelting Plants)</option>
-                                        <option value="Business Operations Knowledge (Sales, Marketing and Operations)">Business Operations Knowledge (Sales, Marketing and Operations)</option>
-                                        <option value="Data Protection knowledge in Human Resources Management">Data Protection knowledge in Human Resources Management</option>
-                                        <option value="Data Protection knowledge in Internal IT Management">Data Protection knowledge in Internal IT Management</option>
-                                        <option value="Finance Knowledge for Non-Finance People (General)">Finance Knowledge for Non-Finance People (General)</option>
-                                        <option value="Legal Knowledge on Data Protection">Legal Knowledge on Data Protection</option>
-                                        <option value="Marketing Knowledge (Manganese Market & Product Knowledge)">Marketing Knowledge (Manganese Market & Product Knowledge)</option>
-                                        <option value="Project Management Skills: The Fundamentals and Process">Project Management Skills: The Fundamentals and Process</option>
-                                        <option value="Stakeholder Relationship Skills for Project Managers">Stakeholder Relationship Skills for Project Managers</option>
-                                        <option value="Others, please specify">Others, please specify</option>
-                                        <option value="Nil">Nil</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-3">
-                                Generic Training Needs (Competency Related)
-                            </div>
-                            <div class="col">
-                                <div class="d-flex align-items-center">
-                                    <div class="mr-3">0 - 1 year:</div>
-                                    <select class="form-control" name="appraisal[generic_training_0_to_1_year]">
-                                        <option value="" selected disabled hidden>Please select</option>
-                                        <option value="Team Building and Cross Culture Awareness">Team Building and Cross Culture Awareness</option>
-                                        <option value="Change Management Skills">Change Management Skills</option>
-                                        <option value="Risk and Crisis Management Skills">Risk and Crisis Management Skills</option>
-                                        <option value="Customer Services Skills">Customer Services Skills</option>
-                                        <option value="Self Leadership Skills">Self Leadership Skills</option>
-                                        <option value="Microsoft Excel 2010/2007 VBA Macro Programming Skills">Microsoft Excel 2010/2007 VBA Macro Programming Skills</option>
-                                        <option value="MS Access Fundamentals Skills">MS Access Fundamentals Skills</option>
-                                        <option value="MS Access Skills for Expert User">MS Access Skills for Expert User</option>
-                                        <option value="MS Excel Fundamentals Skills">MS Excel Fundamentals Skills</option>
-                                        <option value="MS Excel Skills for Expert User">MS Excel Skills for Expert User</option>
-                                        <option value="MS PowerPoint Skills for Expert User">MS PowerPoint Skills for Expert User</option>
-                                        <option value="MS Project Fundamentals Skills">MS Project Fundamentals Skills</option>
-                                        <option value="MS Project Skills for Proficient User">MS Project Skills for Proficient User</option>
-                                        <option value="MS Word Fundamentals Skills">MS Word Fundamentals Skills</option>
-                                        <option value="MS Word Skills Expert User">MS Word Skills Expert User</option>
-                                        <option value="Creative Problem Solving and Decision Making Skills">Creative Problem Solving and Decision Making Skills</option>
-                                        <option value="Time Management Skills">Time Management Skills</option>
-                                        <option value="Elementary Putonghua Skills">Elementary Putonghua Skills</option>
-                                        <option value="Phone Manner Skills and Business Etiquette">Phone Manner Skills and Business Etiquette</option>
-                                        <option value="Presentation Skills in English">Presentation Skills in English</option>
-                                        <option value="Spoken Business English and Social English Skills">Spoken Business English and Social English Skills</option>
-                                        <option value="Writing Skills for Business">Writing Skills for Business</option>
-                                        <option value="Writing Skills on Clear Actionable Emails">Writing Skills on Clear Actionable Emails</option>
-                                        <option value="Negotiation and Persuasion Skills for Business Executives">Negotiation and Persuasion Skills for Business Executives</option>
-                                        <option value="Coaching Skills">Coaching Skills</option>
-                                        <option value="Leadership Skills For Supervisor">Leadership Skills For Supervisor</option>
-                                        <option value="Others, please specify">Others, please specify</option>
-                                        <option value="Nil">Nil</option>
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <div class="mr-3">1 - 2 year:</div>
-                                    <select class="form-control" name="appraisal[generic_training_1_to_2_year]">
-                                        <option value="" selected disabled hidden>Please select</option>
-                                        <option value="Team Building and Cross Culture Awareness">Team Building and Cross Culture Awareness</option>
-                                        <option value="Change Management Skills">Change Management Skills</option>
-                                        <option value="Risk and Crisis Management Skills">Risk and Crisis Management Skills</option>
-                                        <option value="Customer Services Skills">Customer Services Skills</option>
-                                        <option value="Self Leadership Skills">Self Leadership Skills</option>
-                                        <option value="Microsoft Excel 2010/2007 VBA Macro Programming Skills">Microsoft Excel 2010/2007 VBA Macro Programming Skills</option>
-                                        <option value="MS Access Fundamentals Skills">MS Access Fundamentals Skills</option>
-                                        <option value="MS Access Skills for Expert User">MS Access Skills for Expert User</option>
-                                        <option value="MS Excel Fundamentals Skills">MS Excel Fundamentals Skills</option>
-                                        <option value="MS Excel Skills for Expert User">MS Excel Skills for Expert User</option>
-                                        <option value="MS PowerPoint Skills for Expert User">MS PowerPoint Skills for Expert User</option>
-                                        <option value="MS Project Fundamentals Skills">MS Project Fundamentals Skills</option>
-                                        <option value="MS Project Skills for Proficient User">MS Project Skills for Proficient User</option>
-                                        <option value="MS Word Fundamentals Skills">MS Word Fundamentals Skills</option>
-                                        <option value="MS Word Skills Expert User">MS Word Skills Expert User</option>
-                                        <option value="Creative Problem Solving and Decision Making Skills">Creative Problem Solving and Decision Making Skills</option>
-                                        <option value="Time Management Skills">Time Management Skills</option>
-                                        <option value="Elementary Putonghua Skills">Elementary Putonghua Skills</option>
-                                        <option value="Phone Manner Skills and Business Etiquette">Phone Manner Skills and Business Etiquette</option>
-                                        <option value="Presentation Skills in English">Presentation Skills in English</option>
-                                        <option value="Spoken Business English and Social English Skills">Spoken Business English and Social English Skills</option>
-                                        <option value="Writing Skills for Business">Writing Skills for Business</option>
-                                        <option value="Writing Skills on Clear Actionable Emails">Writing Skills on Clear Actionable Emails</option>
-                                        <option value="Negotiation and Persuasion Skills for Business Executives">Negotiation and Persuasion Skills for Business Executives</option>
-                                        <option value="Coaching Skills">Coaching Skills</option>
-                                        <option value="Leadership Skills For Supervisor">Leadership Skills For Supervisor</option>
-                                        <option value="Others, please specify">Others, please specify</option>
-                                        <option value="Nil">Nil</option>
-                                    </select>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <div class="mr-3">2 - 3 year:</div>
-                                    <select class="form-control" name="appraisal[generic_training_2_to_3_year]">
-                                        <option value="" selected disabled hidden>Please select</option>
-                                        <option value="Team Building and Cross Culture Awareness">Team Building and Cross Culture Awareness</option>
-                                        <option value="Change Management Skills">Change Management Skills</option>
-                                        <option value="Risk and Crisis Management Skills">Risk and Crisis Management Skills</option>
-                                        <option value="Customer Services Skills">Customer Services Skills</option>
-                                        <option value="Self Leadership Skills">Self Leadership Skills</option>
-                                        <option value="Microsoft Excel 2010/2007 VBA Macro Programming Skills">Microsoft Excel 2010/2007 VBA Macro Programming Skills</option>
-                                        <option value="MS Access Fundamentals Skills">MS Access Fundamentals Skills</option>
-                                        <option value="MS Access Skills for Expert User">MS Access Skills for Expert User</option>
-                                        <option value="MS Excel Fundamentals Skills">MS Excel Fundamentals Skills</option>
-                                        <option value="MS Excel Skills for Expert User">MS Excel Skills for Expert User</option>
-                                        <option value="MS PowerPoint Skills for Expert User">MS PowerPoint Skills for Expert User</option>
-                                        <option value="MS Project Fundamentals Skills">MS Project Fundamentals Skills</option>
-                                        <option value="MS Project Skills for Proficient User">MS Project Skills for Proficient User</option>
-                                        <option value="MS Word Fundamentals Skills">MS Word Fundamentals Skills</option>
-                                        <option value="MS Word Skills Expert User">MS Word Skills Expert User</option>
-                                        <option value="Creative Problem Solving and Decision Making Skills">Creative Problem Solving and Decision Making Skills</option>
-                                        <option value="Time Management Skills">Time Management Skills</option>
-                                        <option value="Elementary Putonghua Skills">Elementary Putonghua Skills</option>
-                                        <option value="Phone Manner Skills and Business Etiquette">Phone Manner Skills and Business Etiquette</option>
-                                        <option value="Presentation Skills in English">Presentation Skills in English</option>
-                                        <option value="Spoken Business English and Social English Skills">Spoken Business English and Social English Skills</option>
-                                        <option value="Writing Skills for Business">Writing Skills for Business</option>
-                                        <option value="Writing Skills on Clear Actionable Emails">Writing Skills on Clear Actionable Emails</option>
-                                        <option value="Negotiation and Persuasion Skills for Business Executives">Negotiation and Persuasion Skills for Business Executives</option>
-                                        <option value="Coaching Skills">Coaching Skills</option>
-                                        <option value="Leadership Skills For Supervisor">Leadership Skills For Supervisor</option>
-                                        <option value="Others, please specify">Others, please specify</option>
-                                        <option value="Nil">Nil</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div id="part-d-wrapper">
-                <div class="row mt-3">
-                    <div class="col">
-                        <h5 class="title">
-                            Part D: Goals Setting For The Coming Year (Not applicable for Mid-Yearly Appraisal)
-                        </h5>
-                    </div>
-                </div>
-
-                <div class="row mb-3">
-                    <div class="col">
-                        <p>
-                            <small>
-                                This part shall be completed by the Appraising Officer and the Employee collaboratively.
-                            </small>
-                        </p>
-                    </div>
-                </div>
-                <div id="part-d-container">
-
-                </div>
-                {% set attr = include("component/appraisal_template/version_1_d.html.twig") %}
-                <div class="row mt-3 md-3">
-                    <div class="col text-center">
-                        <i class="material-icons text-primary p-2 btn-like" data-collection-container="#part-d-container" data-collection-prototype="{{ attr|e('html_attr') }}">add</i>
-                    </div>
-                </div>
-            </div>
-
-            <div class="part-e-wrapper">
-                <div class="row mt-3">
-                    <div class="col">
-                        <h5 class="title">
-                            Part E: Overall comments from Employee / Appraising Officer
-                        </h5>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-10 offset-1 form-group">
-                        <label>Please enter your comments</label>
-                        <textarea class="form-control" name="appraisal[survey_overall_comment]"></textarea>
-                    </div>
-                </div>
-            </div>
-        </form>
+{{ form_start(form) }}
+    <div class="row">
+        <div class="col">
+            <h5 class="title">
+                Employee Information
+            </h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.staff_name) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.staff_department) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.staff_position) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.staff_office) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.appraiser_name) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.countersigner_name) }}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            {{ form_row(form.survey_period) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.survey_commencement_date) }}
+        </div>
+        <div class="col">
+            {{ form_row(form.appraisal_type) }}
+        </div>
+    </div>
+    <div class="row">
+        <small class="col mb-3">
+            Scoring Scheme: Below Deputy General Manager Level - Part A (50%) + Part B (50%); Deputy General Manager Level and above - Part A (50%) + Part B1 (30%) + Part B2 (20%)
+        </small>
+    </div>
+    <div class="row mt-3">
+        <h5 class="col title">
+            Part A: Accomplishments of Key Responsibilities or Objectives
+        </h5>
+    </div>
+    <div class="row">
+        <small class="col mb-2">
+            For Employee: please state at least 3 key responsibilities or objectives under the direction of your supervisor, and conduct a self-evaluation on your achievements/results achieved.
+        </small>
+    </div>
+    <div class="row">
+        <small class="col mb-2">
+            For Appraising Officer: please evaluate the employee's key responsibilities and results achieved, then assign a reasonable score.
+        </small>
+    </div>
+    <div class="row">
+        <small class="col mb-2">
+            * Weight: Appraising Officer has to judge and give weight of each key responsibility that their subordinates are responsible for in terms of importance. Total weight must be equal to 100%.
+        </small>
     </div>
 
-{% endblock %}
+    <div class="row mt-3 pr-5">
+        <div class="col-6">
+            <h6 class="border-bottom pb-2 mb-3">
+                For Employee
+            </h6>
+        </div>
+        <div class="col-6">
+            <h6 class="border-bottom pb-2 mb-3">
+                For Appraising Office
+            </h6>
+        </div>
 
-{% block modal %}
-{% endblock %}
+    </div>
+    <div id="part-a-wrapper">
+        <div class="row">
+            <div class="col">
+                {{ form_row(form.part_a) }}
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col-3 offset-9 form-group">
+                {{ form_row(form.part_a_overall_score) }}
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-8 offset-2">
+                <div class="border-bottom pb-2 mb-2">
+                    Scoring from Countersigning Officer
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{ form_row(form.countersigner_1_name, {"attr": {"readonly": true}}) }}
+                        {{ form_row(form.countersigner_1_part_a_score) }}
+                    </div>
+                    <div class="col">
+                        {{ form_row(form.countersigner_2_name, {"attr": {"readonly": true}}) }}
+                        {{ form_row(form.countersigner_2_part_a_score) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-3 offset-9 form-group">
+                <div class="col">
+                    {{ form_row(form.part_a_total, {"attr": {"readonly": true}}) }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="part-b-wrapper">
+        <div class="row mt-3">
+            <div class="col title">
+                Part B: Competencies Assessment
+            </div>
+        </div>
+        <div class="row">
+            <p class="col">
+                This part should be completed by both the Appraising Officer and the Employee.
+            </p>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col title">
+                Part B1: This section is applicable to all employees
+            </div>
+        </div>
+
+        <div id="part-b1-wrapper" class="row">
+            <div class="col">
+                {{ form_row(form.part_b1) }}
+            </div>
+        </div>
+
+        <div class="row mb-5">
+            <div class="col-7 form-group">
+                {{ form_row(form.part_b1_overall_comment) }}
+            </div>
+            <div class="col-3 offset-2 form-group">
+                {{ form_row(form.part_b1_overall_score) }}
+            </div>
+        </div>
+        {% if form.part_b2 is defined %}
+            <div class="row">
+                <div class="col title">
+                    Part B2: This section is applicable to Senior Executive employee (Deputy General Manager level and above)
+                </div>
+            </div>
+            <div id="part-b2-wrapper" class="row">
+                <div class="col">
+                    {{ form_row(form.part_b2) }}
+                </div>
+            </div>
+            <div class="row mb-5">
+                <div class="col-7 form-group">
+                    {{ form_row(form.part_b2_overall_comment) }}
+                </div>
+                <div class="col-3 offset-2 form-group">
+                    {{ form_row(form.part_b2_overall_score) }}
+                </div>
+            </div>
+        {% endif %}
+
+        <div class="row mb-5">
+            <div class="col-8 offset-2">
+                <div class="border-bottom pb-2 mb-2">
+                    Scoring from Countersigning Officer
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <div class="form-group">
+                            <label>
+                                <small>Name</small>
+                            </label>
+                            <input readonly type="text" class="form-control-plaintext form-control-sm" value="{{ countersigner_1_name }}">
+                        </div>
+                        {{ form_row(form.countersigner_1_part_b_score) }}
+                    </div>
+                    <div class="col">
+                        <div class="form-group">
+                            <label>
+                                <small>Name</small>
+                            </label>
+                            <input readonly type="text" class="form-control-plaintext form-control-sm" value="{{ countersigner_2_name }}">
+                        </div>
+                        {{ form_row(form.countersigner_2_part_b_score) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-3 offset-9 form-group">
+                {{ form_row(form.part_b_total) }}
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <h5 class="title">
+                Overall Performance Rating
+            </h5>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-3 offset-9 form-group">
+            {{ form_row(form.part_a_b_total) }}
+        </div>
+    </div>
+    <div id="part-c-wrapper">
+        <div class="row mt-3">
+            <div class="col">
+                <h5 class="title">
+                    Part C: Learning and Development Plan (To be completed by Appraising Officer and Employee collaboratively)
+                </h5>
+            </div>
+        </div>
+        <div class="row mb-3">
+            <div class="col">
+                <p>
+                    <small>
+                        For Appraising Officer: please evaluate the strengths and weaknesses of the employee and develop an action plan to improve the employee's work performance in collaboration with him/her.
+                    </small>
+                </p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col form-group">
+                <div class="pb-2 mb-3 border-bottom">Competency Gap Identification</div>
+                <div class="row">
+                    <div class="col-3">
+                        Professional Competency
+                    </div>
+                    <div class="col">
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.prof_competency_1) }}</span>
+                            {{ form_widget(form.prof_competency_1) }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.prof_competency_2) }}</span>
+                            {{ form_widget(form.prof_competency_2) }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.prof_competency_3) }}</span>
+                            {{ form_widget(form.prof_competency_3) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col form-group">
+                <div class="pb-2 mb-3 border-bottom">Competency Gap Identification</div>
+                <div class="row">
+                    <div class="col-3">
+                        Core Competency
+                    </div>
+                    <div class="col">
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.core_competency_1) }}</span>
+                            {{ form_widget(form.core_competency_1) }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.core_competency_2) }}</span>
+                            {{ form_widget(form.core_competency_2) }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.core_competency_3) }}</span>
+                            {{ form_widget(form.core_competency_3) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col form-group">
+                <div class="pb-2 mb-3 border-bottom">Competency Gap Identification</div>
+                <div class="row">
+                    <div class="col-3">
+                        On the Job Training (Coaching / Mentoring)
+                    </div>
+                    <div class="col">
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.on_job_0_to_1_year) }}</span>
+                            {{ form_widget(form.on_job_0_to_1_year) }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.on_job_1_to_2_year) }}</span>
+                            {{ form_widget(form.on_job_1_to_2_year) }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.on_job_2_to_3_year) }}</span>
+                            {{ form_widget(form.on_job_2_to_3_year) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-3">
+                        Functional Training Needs (Job Related)
+                    </div>
+                    <div class="col">
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.function_training_0_to_1_year) }}</span>
+                            {{ form_widget(form.function_training_0_to_1_year) }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.function_training_1_to_2_year) }}</span>
+                            {{ form_widget(form.function_training_1_to_2_year) }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.function_training_2_to_3_year) }}</span>
+                            {{ form_widget(form.function_training_2_to_3_year) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-3">
+                        Generic Training Needs (Competency Related)
+                    </div>
+                    <div class="col">
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.generic_training_0_to_1_year) }}</span>
+                            {{ form_widget(form.generic_training_0_to_1_year) }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.generic_training_1_to_2_year) }}</span>
+                            {{ form_widget(form.generic_training_1_to_2_year) }}
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="mr-3">{{ form_label(form.generic_training_2_to_3_year) }}</span>
+                            {{ form_widget(form.generic_training_2_to_3_year) }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="part-d-wrapper">
+        <div class="row mt-3">
+            <div class="col">
+                <h5 class="title">
+                    Part D: Goals Setting For The Coming Year (Not applicable for Mid-Yearly Appraisal)
+                </h5>
+            </div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col">
+                <p>
+                    <small>
+                        This part shall be completed by the Appraising Officer and the Employee collaboratively.
+                    </small>
+                </p>
+            </div>
+        </div>
+        <div id="part-d-container" class="row">
+            <div class="col">
+                {{ form_row(form.part_d) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="part-e-wrapper">
+        <div class="row mt-3">
+            <div class="col">
+                <h5 class="title">
+                    Part E: Overall comments from Employee / Appraising Officer
+                </h5>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                {{ form_row(form.survey_overall_comment) }}
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                {{ form_row(form.submit) }}
+            </div>
+        </div>
+    </div>
+{{ form_end(form) }}

@@ -243,6 +243,7 @@ class MigrationCommand extends Command {
 			if (empty($app)) {
 				$app = new AppVersion1();
 			}
+			$r["appraisal_type"] = "Annual Appraisal";
 			$app->setIsLocked(true);
 			$app->setPeriod($period);
 			$app->setOwner($user);
