@@ -197,6 +197,7 @@ class MigrationCommand extends Command {
 		$this->em->flush();
 		$userRepo = $this->em->getRepository(User::class);
 		$appRepo = $this->em->getRepository(AppVersion1::class);
+        $rspRepo = $this->em->getRepository(AppraisalResponse::class);
 		$stm = "
 				SELECT form_username, p.survey_period, staff_name, staff_department, staff_office, staff_position, 
 				core_competency_1, core_competency_2, core_competency_3, 
@@ -204,9 +205,7 @@ class MigrationCommand extends Command {
 				generic_training_0_to_1_year, generic_training_1_to_2_year, generic_training_2_to_3_year, 
 				on_job_0_to_1_year, on_job_1_to_2_year, on_job_2_to_3_year, 
 				prof_competency_1, prof_competency_2, prof_competency_3, is_senior, 
-				appraiser_name, countersigner_name, survey_commencement_date, 
-				countersigner_1_part_a_score, countersigner_1_part_b_score, countersigner_2_part_a_score, countersigner_2_part_b_score, 
-				countersigner_1_name, countersigner_2_name, countersigner_1_weight, countersigner_2_weight, 
+				appraiser_name, countersigner_name as countersigner_name_all, survey_commencement_date,
 				part_a_b_total, part_a_total, part_b_total, 
 				part_a_overall_score, part_b1_overall_comment, part_b1_overall_score, part_b2_overall_comment, part_b2_overall_score, 
 				survey_overall_comment
@@ -231,15 +230,8 @@ class MigrationCommand extends Command {
 			if (!$period) {
 				throw new \Exception("Unable to retrieve survey period by query: ".$r["survey_period"]);
 			}
-			// Might not need to separate ctn and main json
-			$ctn1 = $userRepo->findOneBy(["fullName" => $r["countersigner_1_name"]]);
-			$ctn2 = $userRepo->findOneBy(["fullName" => $r["countersigner_2_name"]]);
-			if ($r["countersigner_1_name"] && !$ctn1) {
-				throw new \Exception("Unable to query ctn1");
-			}
-			if ($r["countersigner_2_name"] && !$ctn2) {
-				throw new \Exception("Unable to query ctn2");
-			}
+
+
 			if (empty($app)) {
 				$app = new AppVersion1();
 			}
@@ -248,8 +240,77 @@ class MigrationCommand extends Command {
 			$app->setPeriod($period);
 			$app->setOwner($user);
 			$app->setJsonData($r);
-			$this->em->persist($app);
+            $this->em->persist($app);
 		}
+
+        $stm = "
+				SELECT form_username, p.survey_period, 
+				countersigner_1_part_a_score, countersigner_1_part_b_score, countersigner_2_part_a_score, countersigner_2_part_b_score, 
+				countersigner_1_name, countersigner_2_name
+				FROM pa_form_data as p
+				LEFT JOIN pa_form_period as period 
+				ON p.survey_uid = period.uid";
+        $query = $this->pdo->prepare($stm);
+        $query->execute();
+        while (($r = $query->fetch(\PDO::FETCH_ASSOC)) != null) {
+            /* @var \App\Entity\Base\User $user */
+            /* @var \App\Entity\Base\User $ctn1 */
+            /* @var \App\Entity\Base\User $ctn2 */
+            /* @var \App\Entity\Appraisal\AppraisalPeriod $period */
+            /* @var \App\Entity\Appraisal\AppVersion1 $app */
+            $user = $userRepo->findOneBy(["username"=> strtolower($r["form_username"])]);
+            $period = $periodRepo->findOneBy(["name" => $r["survey_period"]]);
+            $app = $appRepo->findOneBy([
+                "owner" => $user->getId(),
+                "period" => $period->getId(),
+            ]);
+            $ctn1 = $userRepo->findOneBy(["fullName" => $r["countersigner_1_name"]]);
+            $ctn2 = $userRepo->findOneBy(["fullName" => $r["countersigner_2_name"]]);
+            if ($r["countersigner_1_name"] && !$ctn1) {
+                throw new \Exception("Unable to query ctn1");
+            }
+            if ($r["countersigner_2_name"] && !$ctn2) {
+                throw new \Exception("Unable to query ctn2");
+            }
+            if ($ctn1) {
+                $rsp = $rspRepo->findOneBy([
+                    "owner" => $ctn1->getId(),
+                    "responseType" => "counter",
+                    "appraisal" => $app->getId()
+                ]);
+                if (!$rsp) {
+                    $rsp = new AppraisalResponse();
+                    $rsp->setAppraisal($app);
+                    $rsp->setOwner($ctn1);
+                    $rsp->setResponseType("counter");
+                }
+                $rsp->setJsonData([
+                    "counter_part_a_score" => $r["countersigner_1_part_a_score"],
+                    "counter_part_b_score" => $r["countersigner_1_part_b_score"]
+                ]);
+                $this->em->persist($rsp);
+            }
+            if ($ctn2) {
+                $rsp = $rspRepo->findOneBy([
+                    "owner" => $ctn1->getId(),
+                    "responseType" => "counter",
+                    "appraisal" => $app->getId()
+                ]);
+                if (!$rsp) {
+                    $rsp = new AppraisalResponse();
+                    $rsp->setAppraisal($app);
+                    $rsp->setOwner($ctn2);
+                    $rsp->setResponseType("counter");
+                }
+                $rsp->setResponseType("counter");
+                $rsp->setJsonData([
+                    "countersigner_part_a_score" => $r["countersigner_1_part_a_score"],
+                    "countersigner_part_b_score" => $r["countersigner_1_part_b_score"]
+                ]);
+                $this->em->persist($rsp);
+            }
+
+        }
 		$this->em->flush();
 	}
 

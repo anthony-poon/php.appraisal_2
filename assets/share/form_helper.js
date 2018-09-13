@@ -1,5 +1,10 @@
 function bindDOMElement() {
-    $(document).on("click", "*[data-collection-remove]", function(evt) {
+    $(document).on("click", "[data-collection-remove]", function(evt) {
+        let container = $(evt.target).closest("[data-collection-name]");
+        container.trigger("delete", {
+            index: $(evt.target).closest("[data-index]").data("index"),
+            collectionName: container.data("collection-name")
+        });
         $(evt.target).closest("[data-index]").remove();
     });
     $(document).on("click", "*[data-collection-prototype]", function(evt) {

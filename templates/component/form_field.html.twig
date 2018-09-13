@@ -3,7 +3,7 @@
 {% block composite_collection_widget %}
     {% spaceless %}
     {% set max_index = 0 %}
-    <div id="{{ form.vars.id }}-container" >
+    <div id="{{ form.vars.id }}-container" data-collection-name="{{ form.vars.full_name }}">
         {% for child in form %}
             <div data-index="{{ child.vars.name }}" class="d-flex align-items-center form-group">
                 <div class="flex-grow-1">

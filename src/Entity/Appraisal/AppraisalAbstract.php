@@ -150,9 +150,9 @@ abstract class AppraisalAbstract {
 	}
 
 	/**
-	 * @return int
+	 * @return float
 	 */
-	abstract function getScore(): int;
+	abstract function getScore():? float;
 
 	/**
 	 * @return string

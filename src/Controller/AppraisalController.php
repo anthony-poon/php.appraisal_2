@@ -26,56 +26,117 @@ class AppraisalController extends Controller {
     /**
      * @Route("/member/appraisal", name="appraisal_list")
      */
-    public function list(Request $request) {
-    	$periodId = $request->query->get("period");
-    	if ($periodId) {
-    		$repo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
-    		$app = $repo->findOneBy([
-    			"owner" => $this->getUser()->getId(),
-				"period" => $periodId
-			]);
-    		if (empty($app)) {
-				$periodRepo = $this->getDoctrine()->getRepository(AppraisalPeriod::class);
-				$p = $periodRepo->find($periodId);
-				/* @var AppraisalPeriod $p */
-				if (empty($p)) {
-					throw $this->createNotFoundException("Unable to locate entity.");
-				}
-				$classPath = $p->getClassPath();
-				$app = new $classPath;
-				/* @var AppraisalAbstract $app */
-				$app->setPeriod($p);
-				$app->setOwner($this->getUser());
-				$app->create();
-				$em = $this->getDoctrine()->getManager();
-				$em->persist($app);
-				$em->flush();
-			}
-			return $this->redirectToRoute("appraisal_view", [
-				"id" => $app->getId(),
-				"edit" => true
-			]);
-
-		}
+    public function list() {
     	/* @var User $user */
         $user = $this->getUser();
-        $appArr = $user->getAppraisals();
         $list = [];
-        $pList = [];
-        foreach ($appArr as $app) {
-        	/* @var \App\Entity\Appraisal\AppraisalAbstract $app */
-        	$list[$app->getPeriod()->getName()] = $app;
-		}
-		$repo = $this->getDoctrine()->getRepository(AppraisalPeriod::class);
-        foreach ($repo->findAll() as $p) {
-        	/* @var AppraisalPeriod $p */
-        	if ($p->isOpen()) {
-        		$pList[] = $p;
-			}
-		}
+		$periodRepo = $this->getDoctrine()->getRepository(AppraisalPeriod::class);
+        $periods = array_reverse($periodRepo->findAll());
+		// Get all appraised / countersigned appraisal in the opened period
+		foreach ($periods as $p) {
+		    /* @var AppraisalPeriod $p */
+		    $owned = $p->getAppraisals()->filter(function(AppraisalAbstract $app) use ($user){
+		        return $app->getOwner() === $user;
+            })->first();
+		    if ($owned) {
+                $owned = $this->generateUrl("appraisal_view", [
+                    "id" => $owned->getId(),
+                    "edit" => $p->isOpen()
+                ]);
+            } else if ($p->isOpen()) {
+                $owned = $this->generateUrl("appraisal_create", [
+                    "id" => $p->getId(),
+                ]);
+            }
+            $appraisedApp = $p->getAppraisals()->filter(function(AppraisalAbstract $app) use ($user){
+                return $app->getOwner()->getAppraisers()->contains($user);
+            })->toArray();
+            $counteredApp = $p->getAppraisals()->filter(function(AppraisalAbstract $app) use ($user){
+                return $app->getOwner()->getCountersigners()->contains($user);
+            })->toArray();
+            $appList = [];
+            foreach ($appraisedApp as $app) {
+                /* @var AppraisalAbstract $app */
+                $appList[$app->getOwner()->getFullName()] = $this->generateUrl("appraisal_view", [
+                    "id" => $app->getId(),
+                    "role" => "appraiser",
+                    "edit" => $p->isOpen()
+                ]);
+            }
+            if ($p->isOpen()) {
+                $existing = array_keys($appList);
+                $all = $user->getAppraisees();
+                $missing = $all->filter(function(User $u) use ($existing){
+                    return !in_array($u->getFullName(), $existing);
+                });
+                foreach ($missing as $u) {
+                    /* @var User $u */
+                    if ($u->getIsActive()) {
+                        $appList[$u->getFullName()] = null;
+                    }
+                }
+            }
+            $counterList = [];
+            foreach ($counteredApp as $app) {
+                /* @var AppraisalAbstract $app */
+                $counterList[$app->getOwner()->getFullName()] = $this->generateUrl("appraisal_view", ["id" => $app->getId(), "role" => "appraiser"]);
+            }
+            if ($p->isOpen()) {
+                $existing = array_keys($counterList);
+                $all = $user->getCountersignees();
+                $missing = $all->filter(function(User $u) use ($existing){
+                    return !in_array($u->getFullName(), $existing);
+                });
+                foreach ($missing as $u) {
+                    /* @var User $u */
+                    if ($u->getIsActive()) {
+                        $counterList[$u->getFullName()] = null;
+                    }
+                }
+            }
+            $list[$p->getName()] = [
+                "id" => $p->getId(),
+                "owned" => $owned,
+                "appraised" => $appList,
+                "countered" => $counterList
+            ];
+
+        }
         return $this->render("render/appraisal/list_appraisal.html.twig", [
             "list" => $list,
-			"pList" => $pList
+        ]);
+    }
+
+    /**
+     * @Route("/member/appraisal/create/{id}", name="appraisal_create", requirements={"id"="\d+"})
+     */
+    public function newAppraisal(int $id) {
+        $repo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
+        $app = $repo->findOneBy([
+            "owner" => $this->getUser()->getId(),
+            "period" => $id
+        ]);
+        $this->denyAccessUnlessGranted("owner", $app);
+        if (empty($app)) {
+            $periodRepo = $this->getDoctrine()->getRepository(AppraisalPeriod::class);
+            $p = $periodRepo->find($id);
+            /* @var AppraisalPeriod $p */
+            if (empty($p)) {
+                throw $this->createNotFoundException("Unable to locate entity.");
+            }
+            $classPath = $p->getClassPath();
+            $app = new $classPath;
+            /* @var AppraisalAbstract $app */
+            $app->setPeriod($p);
+            $app->setOwner($this->getUser());
+            $app->create();
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($app);
+            $em->flush();
+        }
+        return $this->redirectToRoute("appraisal_view", [
+            "id" => $app->getId(),
+            "edit" => true
         ]);
     }
 
@@ -86,20 +147,22 @@ class AppraisalController extends Controller {
 		$appRepo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
 		/* @var \App\Entity\Appraisal\AppraisalAbstract $app */
 		$app = $appRepo->find($id);
-		$user = $this->getUser();
-		$context = new ControllerContext();
-		$context->setUser($user);
-		$context->setParam($request->query->all());
-		var_dump($app->read());
-		$form = $this->createForm(FormMainType::class, $app->read(), [
+		$role = $request->query->get("role") ?? "owner";
+        $this->denyAccessUnlessGranted($role, $app);
+		$isEdit = $request->query->get("edit") == true;
+        $context = new ControllerContext();
+        $context->setUser($this->getUser());
+        $context->setParam($request->query->all());
+		$form = $this->createForm(FormMainType::class, $app->read($context), [
 			"attr" => [
-				"novalidate" => true
+				"novalidate" => true,
+                "data-ajax" => $this->generateUrl("api_appraisal_view", [
+                    "id" => $id,
+                    "role" => $role
+                ])
 			],
-			"action" => $this->generateUrl("api_appraisal_view", [
-				"id" => $id
-			]),
-			"controller_context" => $context,
-			"disabled" => !$app->isLocked()
+			"role" => $role,
+			"disabled" => !$isEdit || $app->isLocked()
 		]);
 
 		return $this->render("render/appraisal/view_appraisal.html.twig", [
@@ -111,9 +174,11 @@ class AppraisalController extends Controller {
 	 * @Route("/member/api/appraisal/{id}", name="api_appraisal_view", requirements={"id"="\d+"})
 	 * @Method({"GET"})
 	 */
-	public function ajaxGet(int $id) {
+	public function ajaxGet(int $id, Request $request) {
 		$appRepo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
 		$app = $appRepo->find($id);
+        $role = $request->get("role") ?? "owner";
+        $this->denyAccessUnlessGranted($role, $app);
 		/* @var \App\Entity\Appraisal\AppraisalAbstract $app */
 		if (empty($app)) {
 			$this->createNotFoundException("Unable to locate appraisal");
@@ -129,33 +194,40 @@ class AppraisalController extends Controller {
 		$appRepo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
 		$app = $appRepo->find($id);
 		$user = $this->getUser();
+		$role = $request->get("role") ?? "owner";
+		$this->denyAccessUnlessGranted($role, $app);
 		/* @var \App\Entity\Appraisal\AppraisalAbstract $app */
 		if (empty($app)) {
 			$this->createNotFoundException("Unable to locate appraisal");
 		}
-		$form = $this->createForm($app->getTemplate(), $app->read());
+        $context = new ControllerContext();
+        $context->setUser($user)->setParam($request->query->all());
+		$form = $this->createForm($app->getTemplate(), $app->read($context), [
+            "role" => $role
+        ]);
 		$form->handleRequest($request);
 		if ($form->isSubmitted() && $form->isValid()) {
-			$context = new ControllerContext();
-			$context->setUser($user)->setParam($request->query->all());
-			$context->setData($form->getData());
-			$app->update($context);
-			return new JsonResponse($form->getData());
+            $context->setData($form->getData());
+			$result = $app->update($context);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($app);
+            $em->flush();
+            return new JsonResponse([
+                "status" => "success",
+                "data" => $result
+            ]);
 		} else {
-			foreach ($form->getErrors(true) as $e) {
-				var_dump($e->getOrigin()->createView());
-				var_dump($e->getCause());
-			}
+		    $errors = [];
+            foreach ($form->getErrors(true) as $e){
+                $errors[] = [
+                    "source" => $e->getOrigin()->createView()->vars["full_name"],
+                    "msg" => $e->getMessage()
+                ];
+            }
+            return new JsonResponse([
+                "error" => $errors
+            ], 400);
 		}
-		//foreach ($rqJson as $fieldName => $value) {
-		//	$app->update($user, $role, $fieldName, $value);
-		//}
-		//$em = $this->getDoctrine()->getManager();
-		//$em->persist($app);
-		//$em->flush();
-		return new JsonResponse([
-			"status" => "success"
-		]);
 	}
 
 	/**
@@ -163,17 +235,26 @@ class AppraisalController extends Controller {
 	 * @Method({"DELETE"})
 	 */
 	public function ajaxDelete(int $id, Request $request) {
-		$role = $request->request->get("role") ?? "owner";
 		$appRepo = $this->getDoctrine()->getRepository(AppraisalAbstract::class);
 		$app = $appRepo->find($id);
 		$user = $this->getUser();
+        $role = $request->get("role") ?? "owner";
+        $this->denyAccessUnlessGranted($role, $app);
 		/* @var \App\Entity\Appraisal\AppraisalAbstract $app */
 		if (empty($app)) {
 			$this->createNotFoundException("Unable to locate appraisal");
 		}
-		$rqJson = json_decode($request->getContent(), true);
-		foreach ($rqJson as $fieldName) {
-			$app->delete($user, $role, $fieldName);
-		}
+		$data = json_decode($request->getContent(), true);
+		$context = new ControllerContext();
+		$context->setUser($user);
+		$context->setParam($request->query->all());
+		$context->setData($data);
+		$app->delete($context);
+		$em = $this->getDoctrine()->getManager();
+		$em->persist($app);
+		$em->flush();
+		return new JsonResponse([
+		    "status" => "success"
+        ]);
 	}
 }

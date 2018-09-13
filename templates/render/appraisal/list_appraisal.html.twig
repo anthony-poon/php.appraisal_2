@@ -9,39 +9,62 @@
 {% block body %}
     <div class="row">
         <div class="col-sm-8 offset-2">
-            <div class="row">
-                <div class="col title">
-                    Current Appraisals
+            {% for period, arr in list %}
+                <div class="row mb-3">
+                    <div class="col">
+                        <div class="title">
+                            {{ period }}
+                        </div>
+                        <div class="pl-3">
+                            <div class="mb-2">
+                                {% if arr["owned"]  %}
+                                    <div class="mb-2">
+                                        <div>
+                                            <a href="{{arr["owned"] }}">My Appraisal</a>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                <div class="mb-2">
+                                    {% if arr["appraised"] %}
+                                        <div class="mb-2">Appraisee</div>
+                                        <ul>
+                                            {% for name, url in arr["appraised"] %}
+                                                {% if url %}
+                                                    <li>
+                                                        <a href="{{ url }}">{{ name }}</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li>
+                                                        <div>{{ name }} ( Appraisal not started )</div>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                                <div class="mb-2">
+                                    {% if arr["countered"] %}
+                                        <div class="mb-2">Countersignee</div>
+                                        <ul>
+                                            {% for name, url in arr["countered"] %}
+                                                {% if url %}
+                                                    <li>
+                                                        <a href="{{ url }}">{{ name }}</a>
+                                                    </li>
+                                                {% else %}
+                                                    <li>
+                                                        <div>{{ name }} ( Appraisal not started )</div>
+                                                    </li>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </ul>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-
-            </div>
-            <div class="row">
-                <div class="col">
-                    <ul>
-                        {% for period in pList %}
-                            <li>
-                                <a href="{{ path("appraisal_list", {"period": period.id}) }}">{{ period.name }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col title">
-                    Previous Appraisals
-                </div>
-            </div>
-            <div class="row">
-                <div class="col">
-                    <ul>
-                        {% for period, app in list %}
-                            <li>
-                                <a href="{{ path("appraisal_view", {"id": app.id}) }}">{{ period }}</a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 

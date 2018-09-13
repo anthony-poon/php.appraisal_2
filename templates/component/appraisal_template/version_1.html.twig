@@ -1,10 +1,8 @@
 {{ form_start(form) }}
     <div class="row">
-        <div class="col">
-            <h5 class="title">
-                Employee Information
-            </h5>
-        </div>
+        <h5 class="col title">
+            Employee Information
+        </h5>
     </div>
     <div class="row">
         <div class="col">
@@ -25,7 +23,7 @@
             {{ form_row(form.appraiser_name) }}
         </div>
         <div class="col">
-            {{ form_row(form.countersigner_name) }}
+            {{ form_row(form.countersigner_name_all) }}
         </div>
     </div>
     <div class="row">
@@ -89,20 +87,22 @@
                 {{ form_row(form.part_a_overall_score) }}
             </div>
         </div>
-
         <div class="row mb-5">
             <div class="col-8 offset-2">
                 <div class="border-bottom pb-2 mb-2">
                     Scoring from Countersigning Officer
                 </div>
                 <div class="row">
-                    <div class="col">
-                        {{ form_row(form.countersigner_1_name, {"attr": {"readonly": true}}) }}
-                        {{ form_row(form.countersigner_1_part_a_score) }}
+                    <div class="form-group col">
+                        <label>
+                            <small>Name</small>
+                        </label>
+                        <input readonly type="text" class="form-control-plaintext form-control-sm" value="{{ countersigner_name }}">
                     </div>
+                </div>
+                <div class="row">
                     <div class="col">
-                        {{ form_row(form.countersigner_2_name, {"attr": {"readonly": true}}) }}
-                        {{ form_row(form.countersigner_2_part_a_score) }}
+                        {{ form_row(form.countersigner_part_a_score) }}
                     </div>
                 </div>
             </div>
@@ -135,7 +135,46 @@
 
         <div id="part-b1-wrapper" class="row">
             <div class="col">
-                {{ form_row(form.part_b1) }}
+                <div class="row">
+                    <div class="col">
+                        {{ form_row(form.part_b1_0) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{ form_row(form.part_b1_1) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{ form_row(form.part_b1_2) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{ form_row(form.part_b1_3) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{ form_row(form.part_b1_4) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{ form_row(form.part_b1_5) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{ form_row(form.part_b1_6) }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        {{ form_row(form.part_b1_7) }}
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -179,18 +218,9 @@
                             <label>
                                 <small>Name</small>
                             </label>
-                            <input readonly type="text" class="form-control-plaintext form-control-sm" value="{{ countersigner_1_name }}">
+                            <input readonly type="text" class="form-control-plaintext form-control-sm" value="{{ countersigner_name }}">
                         </div>
-                        {{ form_row(form.countersigner_1_part_b_score) }}
-                    </div>
-                    <div class="col">
-                        <div class="form-group">
-                            <label>
-                                <small>Name</small>
-                            </label>
-                            <input readonly type="text" class="form-control-plaintext form-control-sm" value="{{ countersigner_2_name }}">
-                        </div>
-                        {{ form_row(form.countersigner_2_part_b_score) }}
+                        {{ form_row(form.countersigner_part_b_score) }}
                     </div>
                 </div>
             </div>
